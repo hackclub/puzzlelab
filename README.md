@@ -32,6 +32,7 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 - [ ] fullscreen the game
 - [ ] style the upload flow
 - [ ] preview maps
+- [ ] previews don't update accordingly
 
 ### at some point
 
@@ -48,6 +49,9 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 - [ ] play on phone
 
 ### maybe
+
+- [ ] use index of legend as key in map
+- [ ] make legend, solids, tilesWith all variadic instead of taking lists
 
 - [ ] add ability to delete saved files
 - [ ] Across all editors, right click to erase

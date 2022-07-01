@@ -199,16 +199,16 @@ setSolids([
 let level = 0;
 const levels = [
     map`
-...8...
-a..8...
-a..8.3.
-71.8.2.
+.......
+a......
+a....3.
+71...2.
 ...4...`,
     map`
-a..8...
-7999999
-a..8.3.
-.1.8.2.
+a......
+7......
+a....3.
+.1...2.
 ...4...`,
 ];
 
@@ -216,7 +216,7 @@ let activePlayer = player1;
 
 const getActivePlayer = () => getFirst(activePlayer);
 
-setMap(levels[level]);
+
 
 onInput("up", _ => {
     const p1 = getFirst(player1);
@@ -267,7 +267,10 @@ onInput("right", _ => {
 })
 
 /* reset level */
-onInput("j", _ => setMap(levels[level]));
+onInput("j", _ => {
+    setMap(levels[level]);
+    initLasers();
+});
 
 // onInput("k", _ => {
 //     activePlayer = activePlayer === player1 
@@ -350,6 +353,11 @@ afterInput(_ => {
         getFirst(player2).remove()
     }
 
-    if (finished && level+1 < levels.length) setMap(levels[++level]);
+    if (finished && level+1 < levels.length) {
+        setMap(levels[++level]);
+        initLasers();
+    }
 })
 
+setMap(levels[level]);
+initLasers();
