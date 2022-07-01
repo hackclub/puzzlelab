@@ -20,8 +20,6 @@ export const style = `
   .canvas-container > canvas {
     background: var(--bg-surface);
     image-rendering: pixelated;
-    width: 100%;
-    max-width: 500px;
   }
 
   .sprites {

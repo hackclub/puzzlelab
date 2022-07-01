@@ -88,6 +88,20 @@ export function createMapEditor(target) {
         ctx.putImageData(sprite.imageData, x * SPRITE_SIZE, y * SPRITE_SIZE, 0, 0, SPRITE_SIZE, SPRITE_SIZE);
       }
     }
+
+    const canvas = state.canvas;
+    canvas.style.removeProperty("height");
+    canvas.style.removeProperty("width");
+    canvas.style.removeProperty("aspect-ratio");
+    const container = canvas.parentNode;
+    const { width, height } = container.getBoundingClientRect();
+    const ar = canvas.width/canvas.height;
+    canvas.style["aspect-ratio"] = ar;
+    if (height*ar > width) {
+      canvas.style["width"] = "100%";
+    } else {
+      canvas.style["height"] = "100%";
+    }
   };
 
   const onMouseUpdate = (e) => {
