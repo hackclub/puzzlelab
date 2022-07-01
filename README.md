@@ -33,19 +33,18 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 - [ ] style the upload flow
 - [ ] preview maps
 - [ ] previews don't update accordingly
+- [ ] map editor
+  - [x] render combos
+  - [ ] add rows and columns
+  - [x] under certain conditions editor sets text in wrong range
 
 ### at some point
 
 - [ ] first line bitmap not previewed
 - [ ] feedback on user inputs
 - [ ] better error logging
-- [ ] Editors blink when loading
 - [ ] console
 - [ ] When typing in browser console get: "Possible side-effect in debug-evaluate" (add error event handler)
-- [ ] map editor
-  - [x] render combos
-  - [ ] add rows and columns
-  - [x] under certain conditions editor sets text in wrong range
 - [ ] play on phone
 
 ### maybe
@@ -86,6 +85,7 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 
 
 ### addressed
+- [x] Editors blink when loading
 - [x] make deployment build work
 - [x] make map size correctly in map editor
 - [x] Code folding
