@@ -21,9 +21,6 @@ export function run(args, state) {
   const err = evalGameScript(script, state.palette);
   if (err) dispatch("LOG_ERROR", { err });
 
-  // fold all tagged template literals
-  console.log(state.codemirror.foldRange(0, 100))
-
   sizeGameCanvas();
 
   dispatch("RENDER");
