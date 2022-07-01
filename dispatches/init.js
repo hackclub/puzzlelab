@@ -70,6 +70,14 @@ export async function init(args, state) {
     state.codemirror.dispatch({ changes });
   }
 
+  // fold all tagged template literals
+  const text = state.codemirror.state.doc.toString();
+  const matches = text.matchAll(/(map|bitmap|tune)`[\s\S]*?`/g);
+  for (const match of matches) {
+    const index = match.index;
+    state.codemirror.foldRange(index, index+1);
+  }
+
   const container = document.querySelector(".game-canvas-container");
   new ResizeObserver(sizeGameCanvas).observe(container);
 

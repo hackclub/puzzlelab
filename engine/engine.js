@@ -254,6 +254,11 @@ export function init(canvas) {
   let cachedTileImages = {};
 
   function setLegend(bitmaps) {
+    if (Array.isArray(bitmaps)) {
+      zOrder = bitmaps.map(x => x[0]);
+      bitmaps = Object.fromEntries(bitmaps);
+    }
+
     for (const key of Object.keys(bitmaps)) {
       if ([".", "*"].includes(key)) {
         console.warn(`Legend key "${key}" has a special meaning in some case, you should avoid it`);
@@ -581,6 +586,8 @@ export function init(canvas) {
     getAll: (type) => type ? sprites.filter(t => t.type === type) : sprites, // **
     anyOf,
     allOf,
+    width: () => dimensions.width,
+    height: () => dimensions.height,
     setZOrder: (order) => { zOrder = order; }, // **, could use order of collision layers
     setBackground: (type) => { 
       _checkLegend(type);

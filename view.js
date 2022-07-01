@@ -76,6 +76,13 @@ const drawFile = (file, i, state) => {
     const cur = state.codemirror.state.doc.toString();
     dispatch("SET_EDITOR_TEXT", { text, range: [0, cur.length] })
   }
+
+  const fullText = state.codemirror.state.doc.toString();
+  const matches = fullText.matchAll(/(map|bitmap|tune)`[\s\S]*?`/g);
+  for (const match of matches) {
+    const index = match.index;
+    state.codemirror.foldRange(index, index+1);
+  }
   return html`
     <div @click=${setText}>${name.slice(0, 15)}${name.length > 15 ? "..." : ""}</div>
   `

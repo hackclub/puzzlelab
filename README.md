@@ -30,10 +30,7 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 
 ### now
 - [ ] fullscreen the game
-- [x] make map size correctly in map editor
-- [ ] Code folding
 - [ ] style the upload flow
-- [x] make deployment build work
 - [ ] preview maps
 
 ### at some point
@@ -85,6 +82,9 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 
 
 ### addressed
+- [x] make deployment build work
+- [x] make map size correctly in map editor
+- [x] Code folding
 - [x] link sharing
 - [x] add screen resizing bars
 - [x] fix tune editor

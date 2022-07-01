@@ -2,6 +2,10 @@
 const githubPages = str => `https://hackclub.github.io/puzzlelab/games/${str}.js`;
 const makeSampleLink = str => 
   `${window.location.protocol}//${window.location.host}/?file=${githubPages(str)}`
+const makeSample = str => ({
+  name: str,
+  link: makeSampleLink(str)
+})
 
 export const global_state = {
   codemirror: undefined,
@@ -12,22 +16,11 @@ export const global_state = {
   editor: null,
   editRange: null,
   samples: [
-    {
-      name: "test",
-      link: makeSampleLink("test")
-    },
-    {
-      name: "maze",
-      link: makeSampleLink("maze")
-    },
-    {
-      name: "fire",
-      link: makeSampleLink("fire")
-    },
-    {
-      name: "flightless_bird",
-      link: makeSampleLink("flightless_bird")
-    }
+    makeSample("test"),
+    makeSample("maze"),
+    makeSample("fire"),
+    makeSample("flightless_bird"),
+    makeSample("two-players")
   ],
   bitmaps: {},
   savedGames: [],
