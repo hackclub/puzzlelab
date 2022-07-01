@@ -1,5 +1,7 @@
+
+const githubPages = str => `https://hackclub.github.io/puzzlelab/games/${str}.js`;
 const makeSampleLink = str => 
-  `${window.location.protocol}//${window.location.host}/?file=${window.location.protocol}//${window.location.host}/games/${str}.js`
+  `${window.location.protocol}//${window.location.host}/?file=${githubPages(str)}`
 
 export const global_state = {
   codemirror: undefined,
