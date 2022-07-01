@@ -120,7 +120,7 @@ const menu = (state) => html`
 
     <div class="spacer" aria-hidden="true" />
 
-    <a class="menu-item" href="https://github.com/hackclub/gamelab/">
+    <a class="menu-item" href="https://github.com/hackclub/puzzlelab/">
       <ion-icon name="logo-github" />
     </a>
   </div>

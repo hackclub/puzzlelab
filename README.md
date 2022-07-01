@@ -1,62 +1,30 @@
-# [👾 Hack Club Game Lab →](#)
-
-✨ Version 2: now experimenting with a new tile-based game engine!
+# Hack Club Puzzle Lab
 
 The best way to learn is by making things you care about and sharing them with others.  
-**That's what Game Lab is all about.**
-
-Ever wanted to make a delightful new game? Game Lab is your chance to shine!
-
-You should be able to get started in Game Lab with very little experience programming. Even if you're an expert, you should still be able to have fun. We hope you enjoy Game Lab, and we can't wait to see what you make.
-
-### ⮑ _**[Click here to launch Game Lab](#)**_ ⮐
-_(and check out [docs.md](/docs.md) to learn more)_
-
-## Philosophy
-
-People learn best when they make things that they care about, which they can then share with others. This learning philosophy is called [constructionism](https://en.wikipedia.org/wiki/Constructionism_(learning_theory)). Game Lab is a microworld, an environment you can use to express yourself while discovering programming.
-
-Game Lab could also be considered a minimalist [fantasy console](https://en.wikipedia.org/wiki/Fantasy_video_game_console) sort of like [Pico-8](https://www.lexaloffle.com/pico-8.php).
 
 ## Development
 
-Join `#gamelab-dev` on the [Hack Club Slack](https://hackclub.com/slack/) to join the development discussion.
-
-Game Lab requires a local HTTP server to run in development. Here's how to get it running on your own machine.
+We use vite for development.
 
 Clone repo:
 
 ```
-$ git clone https://github.com/hackclub/gamelab/
+$ git clone https://github.com/hackclub/puzzlelab/
 ```
 
 Start a local HTTP server inside the repo:
 
 ```
-$ cd gamelab/
-$ git checkout puzzle-engine
-$ python3 -m http.server 3000
+$ cd puzzlelab/
+$ yarn
+$ yarn dev
 ```
 
 Visit <http://localhost:3000> in your web browser and it should work!
 
 ## License
 
-The Hack Club Game Lab is open source and licensed under the [MIT License](./LICENSE). Fork, remix, and make it your own! Pull requests and other contributions greatly appreciated.
-
-## Roadmap-ish
-
-**Tuesday:** Discuss game gallery / sharing and roadmap.
-
-**Wednesday:** All about design, design, design, design.
-
-**Wednesday-Thursday:** Implement the design. Landing page?
-
-**Friday+:** Build the gallery system.
-
-**Tuesday:** Pass on everything, last-minute work.
-
-Lexi gone on the morning of Wednesday, June 22nd.
+The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./LICENSE). Fork, remix, and make it your own! Pull requests and other contributions greatly appreciated.
 
 ## TODO
 
