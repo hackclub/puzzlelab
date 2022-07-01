@@ -20,7 +20,7 @@ export const global_state = {
     makeSample("maze"),
     makeSample("fire"),
     makeSample("flightless_bird"),
-    makeSample("two-players")
+    makeSample("laser-tag")
   ],
   bitmaps: {},
   savedGames: [],

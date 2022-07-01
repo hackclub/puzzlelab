@@ -1,5 +1,5 @@
 /*
-@title: two players
+@title: laser tag
 */
 
 const player1 = "1"
