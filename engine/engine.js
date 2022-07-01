@@ -388,6 +388,11 @@ export function init(canvas) {
   }
 
   function drawTiles() {
+    const temp = document.createElement("canvas");
+    temp.width = dimensions.width * 16;
+    temp.height = dimensions.height * 16;
+    const tempCtx = temp.getContext("2d");
+
     const grid = getGrid();
     const { width, maxTileDim } = dimensions;
     for (let i = 0; i < grid.length; i++) {
@@ -397,12 +402,10 @@ export function init(canvas) {
 
       if (background !== "") {
         const c = _getTileImage(background);
-        ctx.drawImage(
+        tempCtx.drawImage(
           c, 
-          x*maxTileDim, 
-          y*maxTileDim,
-          maxTileDim,
-          maxTileDim
+          x, 
+          y,
         );
       }
 
@@ -410,15 +413,22 @@ export function init(canvas) {
         .sort((a, b) => zOrder.indexOf(b.type) - zOrder.indexOf(a.type))
         .forEach( ({ type }) => {
           const c = _getTileImage(type);
-          ctx.drawImage(
+          tempCtx.drawImage(
             c, 
-            x*maxTileDim, 
-            y*maxTileDim,
-            maxTileDim,
-            maxTileDim
+            x*16, 
+            y*16,
           );
         })
     }
+
+    console.log(maxTileDim);
+    ctx.drawImage(
+      temp, 
+      0, 
+      0, 
+      maxTileDim*canvas.width/16, 
+      maxTileDim*canvas.height/16
+    );
    
   }
 
