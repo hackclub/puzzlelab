@@ -183,7 +183,24 @@ setLegend([
 ...4.4...4.4....
 ...4.4...4.4....
 ...44444..44....
-........4444....`]
+........4444....`],
+  [ "u", bitmap`
+................
+................
+......0.0.......
+......0.0.......
+......0.0.......
+......0.0.......
+......000.......
+................
+..0..000.00.00..
+..0..0.0.0..0...
+..0..0.0.00.00..
+..0..0.0..0.0...
+..00.000.00.00..
+................
+................
+................`]
 ])
 
 setSolids([
@@ -199,24 +216,30 @@ setSolids([
 let level = 0;
 const levels = [
     map`
-.......
-a......
-a....3.
-71...2.
+...8...
+a..8...
+a..8.3.
+71.8.2.
 ...4...`,
     map`
-a......
-7......
-a....3.
-.1...2.
-...4...`,
+a..8...
+7999999
+a..8.3.
+.1.8.2.
+.3.4...`,
+    map`
+.......
+.33333.
+.31323.
+.33333.
+.......`,
 ];
 
 let activePlayer = player1;
 
 const getActivePlayer = () => getFirst(activePlayer);
 
-
+setMap(levels[level]);
 
 onInput("up", _ => {
     const p1 = getFirst(player1);
@@ -267,10 +290,7 @@ onInput("right", _ => {
 })
 
 /* reset level */
-onInput("j", _ => {
-    setMap(levels[level]);
-    initLasers();
-});
+onInput("j", _ => setMap(levels[level]));
 
 // onInput("k", _ => {
 //     activePlayer = activePlayer === player1 
@@ -351,13 +371,10 @@ afterInput(_ => {
     ]
     if (dead.length) {
         getFirst(player2).remove()
+        setMap(map`
+u`)
     }
 
-    if (finished && level+1 < levels.length) {
-        setMap(levels[++level]);
-        initLasers();
-    }
+    if (finished && level+1 < levels.length) setMap(levels[++level]);
 })
 
-setMap(levels[level]);
-initLasers();
