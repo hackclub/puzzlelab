@@ -3,6 +3,8 @@ export const md = `
 
 ## Everything
 
+There are less than 15 functions you need to learn to know everything the engine can do.
+
 \`\`\`js
 setLegend(
     ["player", bitmap\`...\`],
