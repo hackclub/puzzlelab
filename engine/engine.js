@@ -91,7 +91,7 @@ export function init(canvas) {
       if (!(k in legendDict)) throw new Error(`"${k}" not in legend.`);
 
       this.remove();
-      addSprite(k, this._x, this._y);
+      addSprite(this._x, this._y, k);
     }
 
     get type() {
@@ -215,7 +215,7 @@ export function init(canvas) {
     if (!(type in Object.fromEntries(legend))) throw new Error(`Unknown sprite type: ${type}`);
   }
 
-  const addSprite = (type, x, y) => {
+  const addSprite = (x, y, type) => {
     if (type === ".") return;
 
     _checkBounds(x, y);
@@ -300,7 +300,7 @@ export function init(canvas) {
       const y = Math.floor(i/w);
 
 
-      addSprite(type, x, y);
+      addSprite(x, y, type);
     }
   }
 
