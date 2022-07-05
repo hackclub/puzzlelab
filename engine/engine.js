@@ -70,7 +70,6 @@ export function init(canvas) {
   let afterInputs = [];
   let solids = [];
   let pushable = {};
-  let zOrder = [];
   let maxTileDim = 0;
 
   let background = "";
@@ -88,8 +87,8 @@ export function init(canvas) {
     }
 
     set type(k) {
-
-      if (!(k in legend)) throw new Error(`"${k}" not in legend.`);
+      const legendDict = Object.fromEntries(legend);
+      if (!(k in legendDict)) throw new Error(`"${k}" not in legend.`);
 
       this.remove();
       addSprite(k, this._x, this._y);
@@ -213,73 +212,34 @@ export function init(canvas) {
   }
 
   const _checkLegend = type => {
-    if (!(type in legend)) throw new Error(`Unknown sprite type: ${type}`);
+    if (!(type in Object.fromEntries(legend))) throw new Error(`Unknown sprite type: ${type}`);
   }
 
   const addSprite = (type, x, y) => {
     if (type === ".") return;
-    if (type === "*") throw new Error(`* wildcards are read-only.`);
 
     _checkBounds(x, y);
     _checkLegend(type);
 
-    const { width, height } = dimensions;
-
-    const i = x+(y*width);
-
-    const isCombo = legend[type].type !== undefined;
-
-    if (isCombo) {
-      const comboType = legend[type].type;
-      if (comboType === "and") {
-
-        legend[type].list.forEach(t => {
-          // this sprite can't be a combo
-          const s = new Sprite(t, x, y);
-          sprites.push(s);
-        });
-      }
-
-      if (comboType === "or") throw new Error(`"anyOf" combinations are read only.`);
-    } else {
-      // create sprite
-      const s = new Sprite(type, x, y);
-      sprites.push(s);
-    };
+    const s = new Sprite(type, x, y);
+    sprites.push(s);
   }
-
-  const anyOf = (...args) => ({ type: "or", list: args });
-  const allOf = (...args) => ({ type: "and", list: args });
 
   let cachedTileImages = {};
 
-  function setLegend(bitmaps) {
-    if (Array.isArray(bitmaps)) {
-      zOrder = bitmaps.map(x => x[0]);
-      bitmaps = Object.fromEntries(bitmaps);
-    }
-
-    for (const key of Object.keys(bitmaps)) {
-      if ([".", "*"].includes(key)) {
-        console.warn(`Legend key "${key}" has a special meaning in some case, you should avoid it`);
-        delete bitmaps[key];
-      } else if (key.length > 1) {
-        console.warn(`Legend key "${key}" is too long, you should only use single-character keys`);
-        delete bitmaps[key];
-      }
-      const val = bitmaps[key];
-      if (Array.isArray(val)) bitmaps[key] = allOf(...val);
-    }
+  function setLegend(...bitmaps) {
     legend = bitmaps;
+
     cachedTileImages = {};
     dispatch("SET_BITMAPS", { bitmaps });
   }
 
   
   function _getTileImage(type) {
-    if (!(type in legend)) throw new Error(`Type not in legend: ${type}`);
+    const legendDict = Object.fromEntries(legend);
+    if (!(type in legendDict)) throw new Error(`Type not in legend: ${type}`);
 
-    const val = legend[type];
+    const val = legendDict[type];
     const isCombo = val.type !== undefined;
 
     if (isCombo) throw new Error(`Can not draw combination sprites.`);
@@ -310,43 +270,38 @@ export function init(canvas) {
 
   const _allEqual = arr => arr.every(val => val === arr[0]);
 
-  function setMap(string) { // could have background and sprites
-    // check that level is rectangle
+  const ALPHABET = "0123456789abcdefghijklmnopqrstuvuwyz";
 
+  function setMap(string) { 
     const rows = string.trim().split("\n").map(x => x.trim());
     const rowLengths = rows.map(x => x.length);
     const isRect = _allEqual(rowLengths)
-    if (!isRect) console.error("Level must be rect.");
+    if (!isRect) throw new Error("Level must be rect.");
     const w = rows[0].length;
     const h = rows.length;
     dimensions.width = w;
     dimensions.height = h;
 
-    // const grid = new Array(w*h).fill(0).map(x => []);
-
     sprites = [];
-
-    // scale the ctx based on aspect ratio of level
-    // tiles should always be square
-    // find max tile width to fit
+    const zOrder = legend.map(x => x[0]);
 
     const maxTileDim = Math.min(canvas.width/w, canvas.height/h);
     dimensions.maxTileDim = maxTileDim;
-    // should this adjust screen size?
     setScreenSize(w*maxTileDim, h*maxTileDim);
 
     for (let i = 0; i < w*h; i++) {
-      const type = string.split("").filter(x => x.match(/\S/))[i];
+      const char = string.split("").filter(x => x.match(/\S/))[i];
+      if (char === ".") continue;
+      const index = ALPHABET.indexOf(char);
+      // the index will be the ascii char for the number of the index
+      const type = zOrder[index];
 
       const x = i%w; 
       const y = Math.floor(i/w);
 
+
       addSprite(type, x, y);
-
-      // grid[i].push(addSprite(type, x, y)); 
     }
-
-    // return grid;
   }
 
   function clearTile(x, y) {
@@ -361,7 +316,7 @@ export function init(canvas) {
     return (new Set(array)).size !== array.length;
   }
 
-  function tilesWith(matchingTypes) {
+  function tilesWith(...matchingTypes) {
     const tiles = [];
     const grid = getGrid();
     for (let x = 0; x < dimensions.width; x++) {
@@ -411,6 +366,8 @@ export function init(canvas) {
         );
       }
 
+      const zOrder = legend.map(x => x[0]);
+
       sprites
         .sort((a, b) => zOrder.indexOf(b.type) - zOrder.indexOf(a.type))
         .forEach( ({ type }) => {
@@ -425,126 +382,6 @@ export function init(canvas) {
         })
     }
    
-  }
-
-  function _parsePattern(string) {
-    const parsedPattern = [];
-    const rows = string.trim().split("\n").map(x => x.trim());
-    const rowLengths = rows.map(x => x.length);
-    const isRect = _allEqual(rowLengths)
-    if (!isRect) throw new Error("Pattern must be rectangle.");
-    const w = rows[0].length;
-    const h = rows.length;
-
-    for (let i = 0; i < w*h; i++) {
-      const type = string.split("").filter(x => x.match(/\S/))[i];
-      parsedPattern.push(type)
-    }
-
-    const result = { width: w, height: h, pattern: parsedPattern };
-
-    return result;
-  }
-
-  function _matchPattern(patternData) {
-    const { width, height } = dimensions;
-    const { width: w, height: h, pattern } = patternData;
-
-    let allMatches = [];
-    const grid = getGrid();
-    for (let i = 0; i < grid.length; i++) {
-      const x = i%width; 
-      const y = Math.floor(i/width); 
-
-      if (x + w > width || y + h > height) continue;
-      
-      let match = true;
-      let matches = [];
-      for (let j = 0; j < w*h; j++) {
-        const dx = j%w; 
-        const dy = Math.floor(j/w);
-        const type = pattern[j];
-
-        const offsetIndex = (dx+x)+(dy+y)*width; 
-        let cur = grid[offsetIndex];
-        
-        let matchValue = undefined;
-
-        if (legend[type]?.type === "and") {
-          const targets = legend[type].list;
-          const localMatches = [];
-          cur.forEach(s => {
-            if (targets.includes(s.type) && !localMatches.includes(s))
-              localMatches.push(s);
-          })
-          if (localMatches.length === targets.length) matchValue = localMatches;
-        } else if (legend[type]?.type === "or") {
-          matchValue = cur.find(x => legend[type].list.includes(x.type));
-          if (matchValue !== undefined) matchValue = [ matchValue ];
-          else match = false;
-        } else if (type === "*") {
-          matchValue = cur.find(x => x.type);
-          if (matchValue === undefined) matchValue = [];
-          else matchValue = [matchValue];
-        } else if (type === "." && cur.length === 0) {
-          matchValue = [];
-        } else if (type in legend && legend[type]?.type === undefined) {
-          matchValue = cur.find(x => x.type === type);
-          if (matchValue !== undefined) matchValue = [matchValue];
-          else match = false;
-        }
-
-        match = match && matchValue !== undefined;
-
-        matches.push(matchValue);
-      }
-
-      if (match) {
-        // if match doesn't have overlap with existing matches
-        const overlap = matches.some(t => allMatches.flat().includes(t));
-        if (!overlap) allMatches.push(matches);
-      }
-    }
-
-    return allMatches;
-  }
-
-  function match(pattern) {
-    const p = _parsePattern(pattern);
-    const matches = _matchPattern(p);
-    return matches;
-  }
-
-  // should this return [], number, or boolean
-  function replace(pattern, newPattern) { 
-    const p = _parsePattern(pattern);
-    const matches = _matchPattern(p);
-
-    const pNew = _parsePattern(newPattern);
-
-    if (p.width !== pNew.width || p.height !== pNew.height) 
-      throw new Error("Patterns passed to replacePattern must be the same size");
-
-
-    matches.forEach(match => {
-      match.forEach( (t, i) => {
-        const newType = pNew.pattern[i];
-
-        // remove old
-        // add new
-        if (Array.isArray(t)) {
-          t.forEach((x, i) => {
-            x.remove()
-            if (i === 0) addSprite(newType, x.x, x.y);
-          }); 
-        } else {
-          t.remove();
-          addSprite(newType, t.x, t.y);
-        }
-      })
-    })
-
-    return matches.length > 0
   }
 
   function afterInput(fn) {
@@ -580,15 +417,10 @@ export function init(canvas) {
     map: _makeTag(text => text), // No-op for now, here for editor support
     tune: _makeTag(text => textToTune(text)),
     bitmap: _makeTag(text => ({text, imageData: bitmapTextToImageData(text, global_state.palette)})),
-    match,
-    replace,
     getFirst: (type) => sprites.find(t => t.type === type), // **
     getAll: (type) => type ? sprites.filter(t => t.type === type) : sprites, // **
-    anyOf,
-    allOf,
     width: () => dimensions.width,
     height: () => dimensions.height,
-    setZOrder: (order) => { zOrder = order; }, // **, could use order of collision layers
     setBackground: (type) => { 
       _checkLegend(type);
       background = type;

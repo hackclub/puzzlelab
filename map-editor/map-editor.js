@@ -151,36 +151,17 @@ export function createMapEditor(target) {
     loadInitValue({ text, bitmaps }) {
       const legend = {};
 
-      for (let k in bitmaps) {
-        const val = bitmaps[k];
-        if (val.type === "or") continue;
-        if (val.type === "and") {
-          // need to overlay the text?
-          let textArr = [];
-          val.list.forEach(sprite => {
-            const spriteText = bitmaps[sprite].text.replace(/ +?/g, '');;
-            if (textArr.length === 0) textArr = spriteText.split("");
-            else {
-              spriteText.split("").forEach((ch, i) => {
-                if (ch === ".") return;
-                textArr[i] = ch;
-              })
-            }
-          })
+      const ALPHABET = "0123456789abcdefghijklmnopqrstuvuwyz";
 
-          const text = textArr.join("")
+      bitmaps.forEach( (x, i) => {
+        const k = ALPHABET[i];
+        const val = x[1];
 
-          legend[k] = {
-            text,
-            imageData: bitmapTextToImageData(text, state.palette)
-          }
-        } else {
-          legend[k] = {
-            ...val,
-            imageData: bitmapTextToImageData(val.text, state.palette)
-          }
+        legend[k] = {
+          ...val,
+          imageData: bitmapTextToImageData(val.text, state.palette)
         }
-      }
+      })
 
       state.legend = legend;
       Object.fromEntries(

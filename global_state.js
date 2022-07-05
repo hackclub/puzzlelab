@@ -22,7 +22,7 @@ export const global_state = {
     makeSample("flightless_bird"),
     makeSample("laser-tag")
   ],
-  bitmaps: {},
+  bitmaps: [],
   savedGames: [],
   palette: [
     ["0", [0, 0, 0, 255]],
