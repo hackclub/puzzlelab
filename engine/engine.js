@@ -348,6 +348,9 @@ export function init(canvas) {
   function drawTiles() {
     const grid = getGrid();
     const { width, maxTileDim } = dimensions;
+    ctx.save();
+    ctx.scale(2, 2);
+
     for (let i = 0; i < grid.length; i++) {
       const x = i%width; 
       const y = Math.floor(i/width); 
@@ -355,13 +358,7 @@ export function init(canvas) {
 
       if (background !== "") {
         const c = _getTileImage(background);
-        ctx.drawImage(
-          c, 
-          x*maxTileDim, 
-          y*maxTileDim,
-          maxTileDim,
-          maxTileDim
-        );
+        ctx.drawImage(c, x*16, y*16);
       }
 
       const zOrder = legend.map(x => x[0]);
@@ -370,15 +367,10 @@ export function init(canvas) {
         .sort((a, b) => zOrder.indexOf(b.type) - zOrder.indexOf(a.type))
         .forEach( ({ type }) => {
           const c = _getTileImage(type);
-          ctx.drawImage(
-            c, 
-            x*maxTileDim, 
-            y*maxTileDim,
-            maxTileDim,
-            maxTileDim
-          );
+          ctx.drawImage(c, x*16, y*16);
         })
     }
+    ctx.restore();
    
   }
 
