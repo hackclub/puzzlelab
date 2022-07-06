@@ -40,7 +40,7 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
   - how to handle maps with multiple sprites in one tile
 - [ ] map editor
   - [x] render combos
-  - [ ] add rows and columns
+  - [x] add rows and columns
   - [x] under certain conditions editor sets text in wrong range
 
 ### at some point
