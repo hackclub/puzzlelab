@@ -50,7 +50,7 @@ export function init(canvas) {
   }
 
   // tile gamelab
-  let legend = {};
+  let legend = [];
   let dimensions = {
     width: 0,
     height: 0,
@@ -283,7 +283,10 @@ export function init(canvas) {
     dimensions.height = h;
 
     sprites = [];
-    const zOrder = legend.map(x => x[0]);
+    const sortedLegend = legend
+      .slice()
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(x => x[0]);
 
     const maxTileDim = Math.min(canvas.width/w, canvas.height/h);
     dimensions.maxTileDim = maxTileDim;
@@ -294,7 +297,7 @@ export function init(canvas) {
       if (char === ".") continue;
       const index = ALPHABET.indexOf(char);
       // the index will be the ascii char for the number of the index
-      const type = zOrder[index];
+      const type = sortedLegend[index];
 
       const x = i%w; 
       const y = Math.floor(i/w);

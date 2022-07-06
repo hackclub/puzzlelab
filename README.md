@@ -33,7 +33,7 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 - [ ] style the upload flow
 - [ ] monkeypatch `setInterval`
 - [ ] preview maps
-- [ ] previews don't update accordingly
+- [x] previews don't update accordingly
 - [ ] simplify api
   - single character references are confusing
   - matching and replacing can be done manually, more programmatic in a way
