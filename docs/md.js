@@ -251,14 +251,15 @@ const playback = playTune(melody, Infinity)
 playback.end()
 \`\`\`
 
-## Idioms
-
-### Get Neighbors
-
-### Find Pattern
-
-### Replace
-
-### Count Overlaps
 
 `
+
+// ## Idioms
+
+// ### Get Neighbors
+
+// ### Find Pattern
+
+// ### Replace
+
+// ### Count Overlaps

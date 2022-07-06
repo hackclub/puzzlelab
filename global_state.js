@@ -16,10 +16,10 @@ export const global_state = {
   editor: null,
   editRange: null,
   samples: [
-    makeSample("test"),
+    // makeSample("test"),
     makeSample("maze"),
     makeSample("fire"),
-    makeSample("flightless_bird"),
+    // makeSample("flightless_bird"),
     makeSample("laser-tag")
   ],
   bitmaps: [],
