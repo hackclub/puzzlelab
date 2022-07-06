@@ -288,7 +288,7 @@ export function init(canvas) {
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(x => x[0]);
 
-    const maxTileDim = Math.min(canvas.width/w, canvas.height/h);
+    const maxTileDim = ~~Math.min(canvas.width/w, canvas.height/h);
     dimensions.maxTileDim = maxTileDim;
     setScreenSize(w*maxTileDim, h*maxTileDim);
 
