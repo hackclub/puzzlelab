@@ -18,7 +18,7 @@ export const global_state = {
   samples: [
     // makeSample("test"),
     makeSample("maze"),
-    makeSample("fire"),
+    makeSample("pyre"),
     // makeSample("flightless_bird"),
     makeSample("laser-tag")
   ],
