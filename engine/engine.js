@@ -230,6 +230,8 @@ export function init(canvas) {
   function setLegend(...bitmaps) {
     legend = bitmaps;
 
+    // check that legend keys are single characters
+
     cachedTileImages = {};
     dispatch("SET_BITMAPS", { bitmaps });
   }
@@ -270,8 +272,6 @@ export function init(canvas) {
 
   const _allEqual = arr => arr.every(val => val === arr[0]);
 
-  const ALPHABET = "0123456789abcdefghijklmnopqrstuvuwyz";
-
   function setMap(string) { 
     const rows = string.trim().split("\n").map(x => x.trim());
     const rowLengths = rows.map(x => x.length);
@@ -283,10 +283,6 @@ export function init(canvas) {
     dimensions.height = h;
 
     sprites = [];
-    const sortedLegend = legend
-      .slice()
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(x => x[0]);
 
     const maxTileDim = ~~Math.min(canvas.width/w, canvas.height/h);
     dimensions.maxTileDim = maxTileDim;
@@ -295,9 +291,8 @@ export function init(canvas) {
     for (let i = 0; i < w*h; i++) {
       const char = string.split("").filter(x => x.match(/\S/))[i];
       if (char === ".") continue;
-      const index = ALPHABET.indexOf(char);
       // the index will be the ascii char for the number of the index
-      const type = sortedLegend[index];
+      const type = char;
 
       const x = i%w; 
       const y = Math.floor(i/w);

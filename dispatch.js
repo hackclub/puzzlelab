@@ -51,13 +51,10 @@ const ACTIONS = {
     if (type === null) return;
 
     const el = document.getElementById("asset-editor");
-    const sortedLegend = state.bitmaps
-      .slice()
-      .sort((a, b) => a[0].localeCompare(b[0]));
 
     el.loadInitValue && el.loadInitValue({
       text,
-      bitmaps: sortedLegend
+      bitmaps: state.bitmaps
     });    
   },
   SET_EDITOR_TEXT({ text, range }, state) {

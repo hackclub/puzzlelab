@@ -192,10 +192,8 @@ export function createMapEditor(target) {
     loadInitValue({ text, bitmaps }) {
       const legend = {};
 
-      const ALPHABET = "0123456789abcdefghijklmnopqrstuvuwyz";
-
       bitmaps.forEach( (x, i) => {
-        const k = ALPHABET[i];
+        const k = x[0];
         const val = x[1];
 
         legend[k] = {
