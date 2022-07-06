@@ -17,8 +17,8 @@ export function sizeGameCanvas() {
   const idealHeight = canvas.height;
   let scale = Math.min(width/idealWidth, height/idealHeight);
   // scale = nearestPowerOf2(scale);
-  const w = idealWidth * scale;
-  const h = idealHeight * scale;
+  const w = Math.floor(idealWidth * scale);
+  const h = Math.floor(idealHeight * scale);
 
   // console.log("scale", scale);
 
