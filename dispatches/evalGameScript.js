@@ -3,7 +3,8 @@ import { init } from "../engine/engine.js";
 import { playTune } from "../engine/playTune.js";
 
 let tunes = [];
-let ticks = [];
+let intervals = [];
+let timeouts = [];
 
 export function evalGameScript(script, palette) {
   const canvas = document.querySelector(".game-canvas");
@@ -12,10 +13,21 @@ export function evalGameScript(script, palette) {
   tunes.forEach(t => t.end());
   tunes = [];
 
-  ticks.forEach(clearInterval);
-  ticks = [];
+  timeouts.forEach(clearTimeout);
+  timeouts = [];
+  gameFunctions.setTimeout = (fn, n) => {
+      const t = setTimeout(fn, n);
+      timeouts.push(t);
+      return t;
+  }
 
-  gameFunctions.setInterval = (fn, n) => ticks.push(setInterval(fn, n));
+  intervals.forEach(clearInterval);
+  intervals = [];
+  gameFunctions.setInterval = (fn, n) => {
+      const i = setInterval(fn, n);
+      intervals.push(i);
+      return i;
+  };
 
   gameFunctions.playTune = (tune, n) => {
     const x = playTune(tune, n);
