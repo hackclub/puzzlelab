@@ -3,8 +3,12 @@
 @author: leo mcelroy
 */
 
+const player = "p";
+const red = "r";
+const wall = "w";
+
 setLegend(
-  [ "player", bitmap`
+  [ player, bitmap`
 ................
 ................
 ................
@@ -22,7 +26,7 @@ setLegend(
 ................
 ................
  `],
-  [ "red", bitmap`
+  [ red, bitmap`
 3333333333333333
 3333333333333333
 3333333333333333
@@ -40,7 +44,7 @@ setLegend(
 3333333333333333
 3333333333333333
  `],
-  [ "wall", bitmap`
+  [ wall, bitmap`
 0000000000000000
 0000000000000000
 0000000000000000
@@ -60,23 +64,23 @@ setLegend(
  `]
 )
 
-setSolids(["player", "red", "wall"])
+setSolids([player, red, wall])
 
 let level = 0;
 
 const levels = [
   map`
-0..2....
-...2....
-..2222..
+p..w....
+...w....
+..wwww..
 ........
 ........
-..2222..
-..22....
-..22....
+..wwww..
+..ww....
+..ww....
 `,
   map`
-0....
+p....
 .....
 .....
 .....
@@ -85,35 +89,36 @@ const levels = [
 
 
 setMap(levels[level])
-const player = getFirst("player");
-addSprite(player.x - player.dx, player.y - player.dy, "red")
+const p = getFirst(player);
+addSprite(p.x - p.dx, p.y - p.dy, red)
 
 onInput("up", _ => {
-  getFirst("player").y -= 1;
+  getFirst(player).y -= 1;
 })
 
 onInput("down", _ => {
-  getFirst("player").y += 1;
+  getFirst(player).y += 1;
 })
 
 onInput("left", _ => {
-  getFirst("player").x -= 1;
+  getFirst(player).x -= 1;
 })
 
 onInput("right", _ => {
-  getFirst("player").x += 1;
+  getFirst(player).x += 1;
 })
 
 afterInput(_ => {
-  const player = getFirst("player");
-  if (player.dy !== 0 || player.dx !==0) {
-    addSprite(player.x, player.y, "red")
+  const p = getFirst(player);
+  if (p.dy !== 0 || p.dx !==0) {
+    addSprite(p.x, p.y, red)
   }
 
-  if (getAll("red").length === width() * height() - getAll("wall").length) {
+  if (getAll(red).length === width() * height() - getAll(wall).length) {
     level++;
     if (level in levels) setMap(levels[level])
     else console.log("you win")
-    addSprite(getFirst("player").x, getFirst("player").y, "red")
+    const p = getFirst(player);
+    addSprite(p.x, p.y, red)
   }
 })
