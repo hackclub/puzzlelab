@@ -108,11 +108,13 @@
 					<p class="step-number">Step 5:</p>
 					<h2>Add your gallery image</h2>
 					<ul>
+						<li>Take a screenshot of your game</li>
 						<li>Click back to the gallery folder</li>
 						<li>Open the img folder in gallery</li>
 						<li>Click "Add File"</li>
 						<li>Select "Upload File"</li>
-						<li>Add a file name and click "Commit File"</li>
+						<li>Name your image file the file name for your game</li>
+						<li>Click "Commit File"</li>
 					</ul>
 				</div>
 				<img

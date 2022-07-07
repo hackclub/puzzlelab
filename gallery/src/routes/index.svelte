@@ -9,10 +9,10 @@
 		});
 	});
 
-	import { apiData, Data } from '../data';
+	import { apiData, Data, imgData, Img } from '../data';
 
 	onMount(async () => {
-		fetch('https://api.github.com/repos/Command-Tech/puzzlelab/contents/games?recursive=1')
+		fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/games?recursive=1')
 			.then((res) => res.json())
 			.then((data) => {
 				console.log(data);
@@ -23,17 +23,17 @@
 				return [];
 			});
 
-		// fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/dist/assets')
-		// 	.then((res) => res.json())
-		// 	.then((data) => {
-		// 		imgData.set(data);
-		// 	});
+		fetch('https://api.github.com/repos/bellesea/puzzlelab/contents/games/img')
+			.then((res) => res.json())
+			.then((data) => {
+				imgData.set(data);
+			});
 
-		var iframe = document.getElementsByTagName('iframe');
-		for (let i = 0; i < iframe.length; i++) {
-			var elmnt = iframe.contentWindow.document.getElementsByClassName('run')[0];
-		}
-		console.log('element:' + elmnt);
+		// var iframe = document.getElementsByTagName('iframe');
+		// for (let i = 0; i < iframe.length; i++) {
+		// 	var elmnt = iframe.contentWindow.document.getElementsByClassName('run')[0];
+		// }
+		// console.log('element:' + elmnt);
 	});
 </script>
 
@@ -69,16 +69,17 @@
 				{:else}
 					<div class="gallery-item">
 						<a href={`https://puzzlelab.hackclub.dev/?file=${data.html_url}`}>
+							{#each $Img as img}
+							{#if img.name == data.name}
 							<div class="image-box">
 								<img
-									src="https://raw.githubusercontent.com/bellesea/gamelab-gallery-test/master/{data.name.replace(
-										'.js',
-										''
-									)}.png"
+									src={img.download_url}
 									class="image"
 									alt="game preview"
 								/>
 							</div>
+							{/if}
+							{/each}
 							<div class="text">
 								<h3>
 									{data.name
@@ -188,10 +189,10 @@
 		transform: perspective(1000px);
 	}
 
-	/* .gallery-item:hover {
+	.gallery-item:hover {
 		transform: scale(1.08) rotate(-1.5deg);
 		cursor: pointer;
-	} */
+	}
 
 	.button {
 		background-color: var(--pcb-trace);
