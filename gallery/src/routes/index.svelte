@@ -8,6 +8,7 @@
 			scale: 1.05
 		});
 	})
+
 	import { apiData, Data } from '../data';
 
 	onMount(async () => {
