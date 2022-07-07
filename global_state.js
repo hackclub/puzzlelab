@@ -16,13 +16,13 @@ export const global_state = {
   editor: null,
   editRange: null,
   samples: [
-    makeSample("test"),
+    // makeSample("test"),
     makeSample("maze"),
-    makeSample("fire"),
-    makeSample("flightless_bird"),
+    makeSample("pyre"),
+    // makeSample("flightless_bird"),
     makeSample("laser-tag")
   ],
-  bitmaps: {},
+  bitmaps: [],
   savedGames: [],
   palette: [
     ["0", [0, 0, 0, 255]],

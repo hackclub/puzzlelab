@@ -31,11 +31,16 @@ The Hack Club Puzzle Lab is open source and licensed under the [MIT License](./L
 ### now
 - [ ] fullscreen the game
 - [ ] style the upload flow
+- [ ] monkeypatch `setInterval`
 - [ ] preview maps
-- [ ] previews don't update accordingly
+- [x] previews don't update accordingly
+- [ ] simplify api
+  - single character references are confusing
+  - matching and replacing can be done manually, more programmatic in a way
+  - how to handle maps with multiple sprites in one tile
 - [ ] map editor
   - [x] render combos
-  - [ ] add rows and columns
+  - [x] add rows and columns
   - [x] under certain conditions editor sets text in wrong range
 
 ### at some point

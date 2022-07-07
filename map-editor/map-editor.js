@@ -12,35 +12,58 @@ export function createMapEditor(target) {
     width: 10,
     height: 6,
     activeBitmap: "",
-    mouseDown: 0,
-    updateTextDebounce: null,
+    mouseDown: false,
     cells: [[]],
     legend: {},
     palette: global_state.palette,
   }
-  const endEffects = [];
 
   const view = (state) => html`
     <style>${style}</style>
-    <div class="map-editor-container">
+    <div 
+      class="map-editor-container"
+      @mousedown=${(e) => { state.mousedown = true; mouseDraw(e); }}
+      @mousemove=${mouseDraw}
+      @mouseup=${onMouseUp}>
       <div class="canvas-container">
         <canvas></canvas>
       </div>
-      <div class="sprites">
-        ${Object.entries(state.legend).map(([name, bitmap]) => html`<button
-            class=${state.activeBitmap === name ? "active" : ""}
-            @click=${() => { state.activeBitmap = name; r() }}
-          >
-            <bitmap-preview text="${bitmap.text}" />
-          </button>
-        `)}<button
-          class=${state.activeBitmap === "." ? "active" : ""}
-          @click=${() => { state.activeBitmap = "."; r() }}
-        />
+      <div class="tools">
+        <div>
+          ${Object.entries(state.legend).map(([name, bitmap]) => html`<button
+              class=${state.activeBitmap === name ? "active" : ""}
+              @click=${() => { state.activeBitmap = name; r() }}
+            >
+              <bitmap-preview text="${bitmap.text}" />
+            </button>
+          `)}<button
+            class=${state.activeBitmap === "." ? "active" : ""}
+            @click=${() => { state.activeBitmap = "."; r() }}
+          />
+        </div>
+        <div>
+          <button @mousedown=${addRow}>add row</buttton>
+          <button @mousedown=${delRow}>delete row</buttton>
+          <button @mousedown=${addCol}>add column</buttton>
+          <button @mousedown=${delCol}>delete column</buttton>
+        </div>
       </div>
     </div>
   `;
-  const r = () => { render(target, view(state)); };
+
+
+  const draw = () => {
+    const ctx = state.canvas.getContext("2d");
+    ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
+    for (let y = 0; y < state.height; y++) {
+      for (let x = 0; x < state.width; x++) {
+        if (!state.cells[y]) continue;
+        const sprite = state.legend[state.cells[y][x]];
+        if (!sprite) continue;
+        ctx.putImageData(sprite.imageData, x * SPRITE_SIZE, y * SPRITE_SIZE, 0, 0, SPRITE_SIZE, SPRITE_SIZE);
+      }
+    }
+  };
 
   const resizeCanvas = () => {
     state.canvas.width = state.width * SPRITE_SIZE;
@@ -63,6 +86,49 @@ export function createMapEditor(target) {
     }
   };
 
+  const r = () => { 
+    render(target, view(state)); 
+
+    state.canvas = target.querySelector(".canvas-container > canvas");
+    resizeCanvas();
+    draw();
+    sizeCanvas();
+  };
+
+  const addRow = () => {
+    const newRow = [];
+    for (let i = 0; i < state.width; i++) newRow.push(".");
+    state.cells.push(newRow);
+    state.height++;
+    updateText();
+    r();
+  }
+
+  const delRow = () => {
+    state.cells = state.cells.slice(0, state.cells.length - 1);
+    state.height--;
+    updateText();
+    r();
+  }
+
+  const addCol = () => {
+    state.cells.forEach(row => {
+      row.push(".");
+    })
+    state.width++;
+    updateText();
+    r();
+  }
+
+  const delCol = () => {
+    state.cells.forEach((row, i) => {
+      state.cells[i] = row.slice(0, row.length - 1);
+    })
+    state.width--;
+    updateText();
+    r();
+  }
+
   const updateText = () => {
     let text = "";
     for (let y = 0; y < state.height; y++) {
@@ -77,19 +143,9 @@ export function createMapEditor(target) {
     dispatch("SET_EDITOR_TEXT", { text, range: global_state.editRange });
   }
 
-  const draw = () => {
-    const ctx = state.canvas.getContext("2d");
-    ctx.clearRect(0, 0, state.canvas.width, state.canvas.height);
-    for (let y = 0; y < state.height; y++) {
-      for (let x = 0; x < state.width; x++) {
-        if (!state.cells[y]) continue;
-        const sprite = state.legend[state.cells[y][x]];
-        if (!sprite) continue;
-        ctx.putImageData(sprite.imageData, x * SPRITE_SIZE, y * SPRITE_SIZE, 0, 0, SPRITE_SIZE, SPRITE_SIZE);
-      }
-    }
-
+  function sizeCanvas() {
     const canvas = state.canvas;
+    if (!canvas) return;
     canvas.style.removeProperty("height");
     canvas.style.removeProperty("width");
     canvas.style.removeProperty("aspect-ratio");
@@ -102,85 +158,49 @@ export function createMapEditor(target) {
     } else {
       canvas.style["height"] = "100%";
     }
-  };
+  }
 
-  const onMouseUpdate = (e) => {
+  const mouseDraw = (e) => {
     const [mx, my] = [e.pageX - state.canvas.offsetLeft, e.pageY - state.canvas.offsetTop];
     const [tw, th] = [state.canvas.offsetWidth / state.width, state.canvas.offsetHeight / state.height];
     const [x, y] = [Math.floor(mx / tw), Math.floor(my / th)];
 
-    if (state.mouseDown > 0
+    if (state.mousedown
       && (state.legend[state.activeBitmap] || state.activeBitmap === ".")
       && x < state.width && y < state.height
       && x >= 0 && y >= 0
       && (state.cells[y] && state.cells[y][x]) !== state.activeBitmap
     ) {
       state.cells[y][x] = state.activeBitmap;
-      draw();
-
-      clearTimeout(state.updateTextDebounce);
-      state.updateTextDebounce = setTimeout(updateText, 100);
+      r();
     }
+  }
+
+  const onMouseUp = () => {
+    if (state.mousedown) updateText();
+    state.mousedown = false;
   }
 
   const init = () => {
     r();
-    state.canvas = target.querySelector(".canvas-container > canvas");
-
-    const mouseDown = (e) => {
-      state.mouseDown++;
-      onMouseUpdate(e);
-    };
-    document.addEventListener("mousedown", mouseDown);
-    endEffects.push(() => document.removeEventListener("mousedown", mouseDown));
-    
-    const mouseUp = (e) => {
-      state.mouseDown = Math.max(0, state.mouseDown - 1); // Just in case :)
-    };
-    document.addEventListener("mouseup", mouseUp);
-    endEffects.push(() => document.removeEventListener("mouseup", mouseUp));
-
-    state.canvas.addEventListener("mousemove", onMouseUpdate);
-
-    resizeCanvas();
-    draw();
+    new ResizeObserver(sizeCanvas).observe(target.querySelector("div"));
   };
+
   init();
 
   return {
     loadInitValue({ text, bitmaps }) {
       const legend = {};
 
-      for (let k in bitmaps) {
-        const val = bitmaps[k];
-        if (val.type === "or") continue;
-        if (val.type === "and") {
-          // need to overlay the text?
-          let textArr = [];
-          val.list.forEach(sprite => {
-            const spriteText = bitmaps[sprite].text.replace(/ +?/g, '');;
-            if (textArr.length === 0) textArr = spriteText.split("");
-            else {
-              spriteText.split("").forEach((ch, i) => {
-                if (ch === ".") return;
-                textArr[i] = ch;
-              })
-            }
-          })
+      bitmaps.forEach( (x, i) => {
+        const k = x[0];
+        const val = x[1];
 
-          const text = textArr.join("")
-
-          legend[k] = {
-            text,
-            imageData: bitmapTextToImageData(text, state.palette)
-          }
-        } else {
-          legend[k] = {
-            ...val,
-            imageData: bitmapTextToImageData(val.text, state.palette)
-          }
+        legend[k] = {
+          ...val,
+          imageData: bitmapTextToImageData(val.text, state.palette)
         }
-      }
+      })
 
       state.legend = legend;
       Object.fromEntries(
@@ -195,13 +215,9 @@ export function createMapEditor(target) {
         state.height = state.cells.length;
       }
       
-      resizeCanvas();
-      draw();
       r();
     },
-    end() {
-      endEffects.forEach(e => e());
-    },
+    end() {},
   };
 }
 

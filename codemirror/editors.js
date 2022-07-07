@@ -43,7 +43,12 @@ export class OpenButtonWidget extends WidgetType {
     button.addEventListener("click", () => this.onClick());
     container.replaceChild(button, oldButton);
 
-    if (this.editorType === "sprite") container.querySelector("bitmap-preview").setAttribute("text", this.text);
+
+    if (this.editorType === "bitmap") {
+      container
+        .querySelector("bitmap-preview")
+        .setAttribute("text", this.text);
+    }
 
     return true;
   }

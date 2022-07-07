@@ -31,8 +31,8 @@ export const style = `
   }
 
   code, pre {
-    font-family: "B612 Mono", monospace;
-    font-size: 0.9375em;
+    font-family: monospace;
+    font-size: 1.1em;
     background: #e9ecef;
     color: #343a40;
   }

@@ -1,5 +1,13 @@
-setLegend({
-    '1': bitmap`
+const smallFire = ['0', '1'];
+const   bigFire = ['2', '3'];
+const   allFire = [...smallFire, ...bigFire];
+const       log = 'l';
+const    player = 'p';
+const      cube = 'c';
+const     house = 'h';
+const     grass = 'g';
+setLegend(
+    [ smallFire[0], bitmap`
 ................
 ................
 .....3.3........
@@ -16,8 +24,8 @@ setLegend({
 ....3.333.......
 .......3........
 ................
-`,
-    '2': bitmap`
+`],
+    [ smallFire[1], bitmap`
 ................
 ................
 ........3.3.....
@@ -33,8 +41,8 @@ setLegend({
 ....3.3.333.3...
 .......333.3....
 ........3.......
-................`,
-    '3': bitmap`
+................`],
+    [ bigFire[0], bitmap`
 ................
 ......3.3.......
 .3.3.3.3........
@@ -50,8 +58,8 @@ setLegend({
 ...3.33333.3.3..
 ....3.333.3.3...
 .......3........
-................`,
-    '4': bitmap`
+................`],
+    [ bigFire[1], bitmap`
 ................
 .......3.3......
 ........3.3.3.3.
@@ -67,9 +75,8 @@ setLegend({
 ..3.3.33333.3...
 ...3.3.333.3....
 ........3.......
-................`,
-    'f': anyOf('1', '2'),
-    'l': bitmap`
+................`],
+    [ log, bitmap`
 ................
 ................
 ..........44....
@@ -85,25 +92,25 @@ setLegend({
 .4....4.4.......
 ..4...44........
 ...444..........
-................`,
-    'p': bitmap`
+................`],
+    [ player, bitmap`
 ................
 ................
-..........44....
-........44..4...
-......44.....4..
-.....4.......4..
-....4........4..
-...4.........4..
-..4444......4...
-.44..44....40...
-.40..04...4.0...
-.4....4..4..0...
-.4.00.4.40.0....
-..4...44.0......
-...444..0.......
-................`,
-    c: bitmap`
+................
+......444.......
+.....4...4......
+.....40.04......
+....44...44.....
+...4.40004.4....
+...4.4...4.4....
+......444.......
+.....4...4......
+.....4...4......
+....44...44.....
+................
+................
+................`],
+    [ cube, bitmap`
 ......4444......
 ....44....44....
 ..44........44..
@@ -119,8 +126,8 @@ setLegend({
 ..44....4...44..
 ....44..4.44....
 ......4444......
-................`,  
-    'h': bitmap`
+................`], 
+    [ house, bitmap`
 ................
 ................
 ................
@@ -136,8 +143,8 @@ setLegend({
 ...5.........5..
 ...5.........5..
 ..5....555....5.
-...555.555.555..`,
-    'g': bitmap`
+...555.555.555..`],
+    [ grass, bitmap`
 ..4.........4...
 ...4.........4..
 ...44........4..
@@ -153,63 +160,91 @@ setLegend({
 .4...44......4..
 .4...........4..
 4...........4...
-................`
-})
+................`]
+)
 
-const log = x => (console.log(x), x);
+setSolids([player, log, cube]);
+setPushables({ [player]: [cube] })
 
-const isGrass = ({ type }) => type == "g";
+const      isGrass = tile => tile.type == grass;
+const     burnsBig = tile => tile.type == log || tile.type == cube;
+const needsBigFire = tile => tile.type == house;
 
-const burnsBig = ({ type }) => "lc".split('').includes(type);
-const needsBigFire = ({ type }) => type == "h";
-const fireKinds = ["1", "2", "3", "4"];
-const isFire = ({ type }) => fireKinds.includes(type);
-const isSmallFire = ({ type }) => ["1", "2"].includes(type);
-const fire = () => fireKinds.flatMap(getAll);
+const isSmallFire = tile => smallFire.includes(tile.type);
+const      isFire = tile => allFire.includes(tile.type);
 
-const neighbors = ({ x, y }) => [getTile(x+1, y+0),
-                                 getTile(x-1, y+0),
-                                 getTile(x+0, y+1),
-                                 getTile(x+0, y-1)];
+const fireTiles = () => allFire.flatMap(getAll);
+const neighborTiles = tile => {
+    return [
+        getTile(tile.x+1, tile.y+0),                                 
+        getTile(tile.x-1, tile.y+0),                                 
+        getTile(tile.x+0, tile.y+1),                                 
+        getTile(tile.x+0, tile.y-1),                                 
+        getTile(tile.x,   tile.y)
+    ]
+    .flat();
+}
+
+const replace = (type0, type1) => {
+    for (const sprite of getAll(type0)) {
+        sprite.type = type1;
+    }
+}
+
 let tick = 0;
 const ticker = window.activeTicker = setInterval(() => {
     if (window.activeTicker != ticker) return clearInterval(ticker);
+    tick++;
 
     /* fire flicker */
-    tick++;
-     (tick % 2) ? replace("1", "2") : replace("2", "1");
-    !(tick % 2) ? replace("3", "4") : replace("4", "3");
+    if (tick % 2) {
+        replace(smallFire[0], smallFire[1]);
+        replace(  bigFire[0],   bigFire[1]);
+    } else {
+        replace(smallFire[1], smallFire[0]);
+        replace(  bigFire[1],   bigFire[0]);
+    }
 
     /* fire spread */
-    if (tick % 4 == 0)
-        for (const f of fire()) for (const s of neighbors(f)) {
-            if (!s || s.some(isFire)) continue;
-            const [t] = s;
-            if (!t) continue;
-            if (needsBigFire(t) && isSmallFire(f)) continue;
-            t.type = burnsBig(t) ? "3" : "1";
-
-            setTimeout(() => clearTile(t.x, t.y), 1000);
+    if (tick % 4 == 0) {        
+        // changing the map while iterating over can create bugs,
+        // so we'll store the tiles we want to replace with fire here
+        const replacements = new Map();
+        
+        for (const fire of fireTiles()) {            
+            for (const tile of neighborTiles(fire)) {
+                if (isFire(tile)) continue;
+                if (isSmallFire(fire) && needsBigFire(tile)) continue;
+                
+                replacements.set(
+                    tile,
+                    burnsBig(tile) ? bigFire[0] : smallFire[0]
+                );
+            }
+            
+            fire.remove();
         }
 
-    if (match("h").length == 0 && fire().length == 0)
-        levels[1+level] && startLevel(levels[++level]);
+        // apply all of the replacements we stored
+        for (const [tile, type] of replacements) {
+            tile.type = type;
+        }
+    }
+
+    /* win condition */
+    if (getAll(house).length == 0 && fireTiles().length == 0) {
+        levels[1+level] && setMap(levels[++level]);
+    }
 }, 200);
 
 afterInput(() => {
     /* crate kill grass */
-    for (const { x, y } of getAll('c'))
-        for (const g of getTile(x, y).filter(isGrass))
+    for (const { x, y } of getAll('c')) {
+        for (const g of getTile(x, y).filter(isGrass)) {
             g.remove();
+        }
+    }
 })
-
-/* we have to wrap setMap so we can make sure fires die */
-const startLevel = (m) => {
-    setMap(m);
-    
-    for (const f of fire())
-        setTimeout(() => clearTile(f.x, f.y), 1000);
-};
 
 let level = 0;
 const levels = [
@@ -245,11 +280,27 @@ g1.......
 .1gggggg.`,
 ]
 // .reverse();
-startLevel(levels[level]);
-setSolids(["p", "l", "c"]);
-setPushables({ p: ["c"] })
-onInput( "left", () => getFirst("p").x--)
-onInput("right", () => getFirst("p").x++)
-onInput(   "up", () => getFirst("p").y--)
-onInput( "down", () => getFirst("p").y++)
-onInput(    "j", () => startLevel(levels[level]));
+
+const pushPlayer = (dx, dy) => {
+  if (getFirst(player)) {
+    getFirst(player).x += dx;
+    getFirst(player).y += dy;
+  }
+}
+onInput( "left", () => {
+  pushPlayer(-1,  0);
+})
+onInput("right", () => {
+  pushPlayer( 1,  0);
+})
+onInput(   "up", () => {
+  pushPlayer( 0, -1);
+})
+onInput( "down", () => {
+  pushPlayer( 0,  1);
+})
+
+setMap(levels[level]);
+onInput(    "j", () => {
+    setMap(levels[level])
+});
