@@ -2,17 +2,17 @@
 	import { onMount } from 'svelte';
 	import VanillaTilt from 'vanilla-tilt';
 
-	onMount(()=> {
-		VanillaTilt.init(document.querySelectorAll(".gallery-item"), {
+	onMount(() => {
+		VanillaTilt.init(document.querySelectorAll('.gallery-item'), {
 			max: 15,
 			scale: 1.05
 		});
-	})
+	});
 
 	import { apiData, Data } from '../data';
 
 	onMount(async () => {
-		fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/games?recursive=1')
+		fetch('https://api.github.com/repos/Command-Tech/puzzlelab/contents/games?recursive=1')
 			.then((res) => res.json())
 			.then((data) => {
 				console.log(data);
@@ -53,7 +53,7 @@
 			</div>
 		</div>
 	</div>
-		<a class="logo" href="https://hackclub.com"
+	<a class="logo" href="https://hackclub.com"
 		><img src="https://assets.hackclub.com/flag-orpheus-top.svg" alt="hack club logo" /></a
 	>
 	<a href="https://github.com/hackclub/puzzlelab" target="_blank"
@@ -63,22 +63,9 @@
 		<div class="gallery-inner">
 			{#each $Data as data}
 				{#if data.name == '.DS_Store'}
-					<div class="gallery-item">
-						<a href={`https://puzzlelab.hackclub.dev/`}>
-							<div class="image-box">
-								<iframe
-									src="https://puzzlelab.hackclub.dev/?file=https://hackclub.github.io/puzzlelab/games/maze.js"
-									title={data.name}
-								/>
-							</div>
-							<div class="text">
-								<h3>Your Game</h3>
-								<a href={`https://puzzlelab.hackclub.dev/`} target="_blank" class="button"
-									>Create &#9658;</a
-								>
-							</div>
-						</a>
-					</div>
+					<h1 style="display: none;">hi</h1> <!--hacky temp solution-->
+				{:else if data.name == 'img'}
+					<h1 style="display: none;">hi</h1> <!--hacky temp solution-->
 				{:else}
 					<div class="gallery-item">
 						<a href={`https://puzzlelab.hackclub.dev/?file=${data.html_url}`}>

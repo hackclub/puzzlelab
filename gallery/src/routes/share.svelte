@@ -42,10 +42,7 @@
 				<div>
 					<p class="step-number">Step 1:</p>
 					<h2>Name your game</h2>
-					<p>
-						Add the following comment. For your title, you want to make sure there are no spaces as
-						this will translate to your file name.
-					</p>
+					<p>Add the following comment.</p>
 				</div>
 				<code class="media"
 					>/*
@@ -72,41 +69,78 @@
 				<div>
 					<p class="step-number">Step 3:</p>
 					<h2>
-						Upload your game to the <a
-							href="https://github.com/hackclub/puzzlelab/tree/main/games"
+						Fork the <a
+							href="https://github.com/hackclub/puzzlelab/fork"
 							target="_blank"
 							class="link">PuzzleLab Repository</a
 						>
 					</h2>
 					<ul>
-						<li>Open the "Games" folder within the PuzzleLab Repository</li>
-						<li>Click "Add File"</li>
-						<li>Select "Upload File"</li>
+						<li>Click on the link above</li>
+						<li>Select "Create Fork"</li>
 					</ul>
 				</div>
 				<img
 					class="media"
-					src="https://cloud-3y74f3v9a-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_4.49.28_pm.png"
-					alt="screenshot of where to upload game file option is"
+					src="https://cloud-jps0pn7d1-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_11.40.19_pm.png"
+					alt="screenshot of where to fork repository"
 				/>
 			</div>
 			<div class="step">
 				<div>
 					<p class="step-number">Step 4:</p>
+					<h2>Upload your game to the your fork of the PuzzleLab Repository</h2>
+					<ul>
+						<li>Open the "Games" folder within your fork</li>
+						<li>Click "Add File"</li>
+						<li>Select "Upload File"</li>
+						<li>Add a file name and click "Commit File"</li>
+					</ul>
+				</div>
+				<img
+					class="media"
+					src="https://cloud-a7l5tmw39-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_11.51.32_pm.png"
+					alt="screenshot of where to upload game file option is"
+				/>
+			</div>
+			<div class="step">
+				<div>
+					<p class="step-number">Step 5:</p>
+					<h2>Add your gallery image</h2>
+					<ul>
+						<li>Click back to the gallery folder</li>
+						<li>Open the img folder in gallery</li>
+						<li>Click "Add File"</li>
+						<li>Select "Upload File"</li>
+						<li>Add a file name and click "Commit File"</li>
+					</ul>
+				</div>
+				<img
+					class="media"
+					src="https://cloud-af1r71tvz-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_11.52.55_pm.png"
+					alt="screenshot of gallery image upload"
+				/>
+			</div>
+			<div class="step">
+				<div>
+					<p class="step-number">Step 6:</p>
 					<h2>Create Pull Request</h2>
 					<ul>
-						<li>Scroll down and click propose new file</li>
-						<li>Select "Create Pull Request"</li>
+						<li>Click on contribute</li>
+						<li>Select "Open Pull Request"</li>
+						<li>Click "Create Pull Request"</li>
+						<li>Name your pull request with the name of your game</li>
 						<li>Click "Create Pull Request"</li>
 					</ul>
 					<p>Once we approve it! Your game will appear in the gallery :)</p>
 				</div>
 				<img
 					class="media"
-					src="https://cloud-n8au370qf-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_8.59.28_pm.png"
+					src="https://cloud-af1r71tvz-hack-club-bot.vercel.app/0screenshot_2022-07-07_at_11.52.55_pm.png"
 					alt="screenshot of pull request page"
 				/>
 			</div>
+			<a href="/" class="button big-button">Check out the gallery</a>
 		</div>
 	</div>
 </body>
@@ -168,6 +202,7 @@
 	.inner {
 		width: 85vw;
 		margin: auto;
+		padding-bottom: 5vh;
 	}
 
 	.heading-outer {
@@ -192,6 +227,25 @@
 
 	.step-number {
 		margin: 0;
+	}
+
+	.big-button {
+		position: relative;
+		font-size: 16px;
+		padding: 5px 10px;
+		font-size: 0.8em;
+		font-weight: 700;
+		border-radius: 3px;
+		background-color: transparent;
+		color: white;
+		border: white 2px dotted;
+		text-decoration: none;
+	}
+
+	.big-button:hover {
+		background-color: white;
+		color: var(--pcb-base);
+		border: white 2px solid;
 	}
 
 	.github-logo {
@@ -260,6 +314,11 @@
 
 		img {
 			width: 80%;
+		}
+
+		.big-button {
+			position: relative;
+			font-size: 20px;
 		}
 	}
 </style>
