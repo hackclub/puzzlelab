@@ -2,6 +2,7 @@ import { bitmapTextToImageData } from "./bitmap.js";
 import { dispatch } from "../dispatch.js";
 import { textToTune } from '../textTuneConverters.js';
 import { global_state } from "../global_state.js";
+import { sizeGameCanvas } from "../dispatches/sizeGameCanvas.js";
 import * as render from "./render.js";
 
 
@@ -37,6 +38,10 @@ export function init(canvas) {
   function setScreenSize(w, h) {
     canvas.width = w;
     canvas.height = h;
+
+    window.idealDimensions = [dimensions.width, dimensions.height];
+    sizeGameCanvas();
+
     render.resize(canvas);
   }
 
@@ -224,6 +229,7 @@ export function init(canvas) {
     // check that legend keys are single characters
 
     cachedTileImages = {};
+    render.setBitmaps(bitmaps);
     dispatch("SET_BITMAPS", { bitmaps });
   }
 
@@ -275,9 +281,7 @@ export function init(canvas) {
 
     sprites = [];
 
-    const maxTileDim = ~~Math.min(canvas.width/w, canvas.height/h);
-    dimensions.maxTileDim = maxTileDim;
-    setScreenSize(w*maxTileDim, h*maxTileDim);
+    setScreenSize(w*16, h*16);
 
     for (let i = 0; i < w*h; i++) {
       const char = string.split("").filter(x => x.match(/\S/))[i];
@@ -339,7 +343,8 @@ export function init(canvas) {
   function drawTiles() {
     const grid = getGrid();
     const { width, height, maxTileDim } = dimensions;
-    const img = new ImageData(dimensions.width, dimensions.height);
+    if (width == 0 || height == 0) return new ImageData(1, 1);
+    const img = new ImageData(width, height);
 
     for (let i = 0; i < grid.length; i++) {
       const x = i%width; 
@@ -347,8 +352,9 @@ export function init(canvas) {
       const sprites = grid[i];
 
       if (!sprites[0]) continue;
+      const t = sprites[0].type;
       const r = sprites[0].type.charCodeAt(0);
-      img.data[(y*dimensions.width + x)*4 + 0] = r;
+      img.data[(y*dimensions.width + x)*4 + 0] = legend.findIndex(f => f[0] == t);
       img.data[(y*dimensions.width + x)*4 + 1] = (r*3) % 128;
       img.data[(y*dimensions.width + x)*4 + 2] = 255 - r;
       img.data[(y*dimensions.width + x)*4 + 3] = 255;
