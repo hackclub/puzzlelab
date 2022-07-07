@@ -23,7 +23,7 @@ export function setBitmaps(bitmaps) {
 }
 
 export function init(canvas) {
-  gl = canvas.getContext('webgl2');
+  gl = canvas.getContext('webgl2');//, { alpha: false });
 
   const program = createProgram(glsl['shader-vertex'], glsl['shader-fragment']);
   gl.useProgram(program);
@@ -113,20 +113,27 @@ uniform sampler2D u_spritesheet;
 uniform vec2 u_texres;
 in vec2 texCoord;
 
-out vec4 fragmentColor;
+out vec4 frag;
+
+vec4 sampleTile(vec2 coord, float index) {
+  int spriteIndex = int(index*255.0)-1;
+  vec2 fcoord = mod(coord*u_texres, 1.0);
+  fcoord += vec2(spriteIndex%4, spriteIndex/4);
+  vec4 ret = texture(u_spritesheet, fcoord/4.0);
+  ret.a *= min(1.0, index);
+  return ret;
+}
 
 void main(void) {
-  vec4 raw = texture(u_tex, vec2(texCoord.x, 1.0 - texCoord.y));
-  int spriteIndex = int(raw.r*255.0);
-  vec2 fcoord = mod(texCoord*u_texres, 1.0);
-  fcoord += vec2(spriteIndex%4, spriteIndex/4);
-  fragmentColor = texture(u_spritesheet, fcoord/4.0);
-  fragmentColor *= raw.a;
-  fragmentColor.a = min(fragmentColor.a, raw.a);
-  // texture(
-  //   u_spritesheet,
-  //   texCoord/4.0 + 
-  // );
+  vec2 coord = vec2(texCoord.x, 1.0 - texCoord.y);
+  vec4 raw = texture(u_tex, coord);
+
+  frag = vec4(1);
+  vec4 sprite;
+  sprite = sampleTile(coord, raw.a); if (sprite.a > 0.0) frag = vec4(sprite.xyz, 1);
+  sprite = sampleTile(coord, raw.b); if (sprite.a > 0.0) frag = vec4(sprite.xyz, 1);
+  sprite = sampleTile(coord, raw.g); if (sprite.a > 0.0) frag = vec4(sprite.xyz, 1);
+  sprite = sampleTile(coord, raw.r); if (sprite.a > 0.0) frag = vec4(sprite.xyz, 1);
 }
   `,
   'shader-vertex': `#version 300 es

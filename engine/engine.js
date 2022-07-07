@@ -349,15 +349,16 @@ export function init(canvas) {
     for (let i = 0; i < grid.length; i++) {
       const x = i%width; 
       const y = Math.floor(i/width); 
-      const sprites = grid[i];
 
-      if (!sprites[0]) continue;
-      const t = sprites[0].type;
-      const r = sprites[0].type.charCodeAt(0);
-      img.data[(y*dimensions.width + x)*4 + 0] = legend.findIndex(f => f[0] == t);
-      img.data[(y*dimensions.width + x)*4 + 1] = (r*3) % 128;
-      img.data[(y*dimensions.width + x)*4 + 2] = 255 - r;
-      img.data[(y*dimensions.width + x)*4 + 3] = 255;
+      const sprites = grid[i];
+      const zOrder = legend.map(x => x[0]);
+      sprites.sort((a, b) => zOrder.indexOf(b.type) - zOrder.indexOf(a.type));
+
+      for (let i = 0; i < 4; i++) {
+        if (!sprites[i]) continue;
+        const { type: t } = sprites[i];
+        img.data[(y*dimensions.width + x)*4 + i] = 1+legend.findIndex(f => f[0] == t);
+      }
     }
 
     return img;
