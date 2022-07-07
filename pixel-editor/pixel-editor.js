@@ -686,7 +686,6 @@ export function createPixelEditor(target) {
 
   return {
     loadInitValue({ text }) {
-      console.log(text, state.palette);
       const imageData = bitmapTextToImageData(text, state.palette);
       for (let i = 0; i < state.gridColors.length; i++) {
         state.gridColors[i] = [

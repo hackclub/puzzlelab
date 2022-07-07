@@ -6,7 +6,7 @@ import { init } from "./dispatches/init.js";
 import { logError } from "./dispatches/logError.js";
 import { setName } from "./dispatches/setName.js";
 import { saveToFile } from "./dispatches/export/saveToFile.js";
-import "./dispatches/fetchAndBundle/fetchAndBundle.js";
+// import "./dispatches/fetchAndBundle/fetchAndBundle.js";
 import { exportS3 } from "./s3.js";
 import { global_state } from "./global_state.js";
 
@@ -51,6 +51,7 @@ const ACTIONS = {
     if (type === null) return;
 
     const el = document.getElementById("asset-editor");
+
     el.loadInitValue && el.loadInitValue({
       text,
       bitmaps: state.bitmaps

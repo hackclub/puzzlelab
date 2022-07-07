@@ -2,18 +2,18 @@
 @title: laser tag
 */
 
-const player1 = "1"
-const player2 = "2"
-const wall = "3"
-const upLaser = "4"
-const downLaser = "5"
-const leftLaser = "6"
-const rightLaser = "7"
-const vert = "8"
-const horz = "9"
-const target = "a"
+const player1 = "0"
+const player2 = "1"
+const wall = "2"
+const upLaser = "3"
+const downLaser = "4"
+const leftLaser = "5"
+const rightLaser = "6"
+const vert = "7"
+const horz = "8"
+const target = "9"
 
-setLegend([
+setLegend(
   [ player1, bitmap`
 ................
 ................
@@ -201,7 +201,7 @@ setLegend([
 ................
 ................
 ................`]
-])
+)
 
 setSolids([
     player1, 
@@ -216,22 +216,22 @@ setSolids([
 let level = 0;
 const levels = [
     map`
-...8...
-a..8...
-a..8.3.
-71.8.2.
-...4...`,
+...7...
+9..7...
+9..7.2.
+60.7.1.
+...3...`,
     map`
-a..8...
-7999999
-a..8.3.
-.1.8.2.
-.3.4...`,
+9..7...
+6888888
+9..7.2.
+.0.7.1.
+.2.3...`,
     map`
 .......
-.33333.
-.31323.
-.33333.
+.22222.
+.21202.
+.22222.
 .......`,
 ];
 
@@ -251,6 +251,7 @@ onInput("up", _ => {
         p2.y -= 1;
         p1.y -= 1;
     }
+
 })
 
 onInput("down", _ => {
@@ -315,7 +316,7 @@ function initLasers() {
         while (true) {
             if (y < 0) break;
             const t = getTile(x, y);
-            if (t.length === 0 || isJustLaser(t)) addSprite(vert, x, y)
+            if (t.length === 0 || isJustLaser(t)) addSprite(x, y, vert)
             else break;
             y--;
         }
@@ -327,7 +328,7 @@ function initLasers() {
         while (true) {
             if (y >= height()) break;
             const t = getTile(x, y);
-            if (t.length === 0 || isJustLaser(t)) addSprite(vert, x, y)
+            if (t.length === 0 || isJustLaser(t)) addSprite(x, y, vert)
             else break;
             y++;
         }
@@ -339,7 +340,7 @@ function initLasers() {
         while (true) {
             if (x >= width()) break;
             const t = getTile(x, y);
-            if (t.length === 0 || isJustLaser(t)) addSprite(horz, x, y)
+            if (t.length === 0 || isJustLaser(t)) addSprite(x, y, horz)
             else break;
             x++;
         }
@@ -351,7 +352,7 @@ function initLasers() {
         while (true) {
             if (x < 0) break;
             const t = getTile(x, y);
-            if (t.length === 0 || isJustLaser(t)) addSprite(horz, x, y)
+            if (t.length === 0 || isJustLaser(t)) addSprite(x, y, horz)
             else break;
             x--;
         }
@@ -366,15 +367,13 @@ afterInput(_ => {
     })
 
     const dead = [
-        ...tilesWith([player2, vert]),
-        ...tilesWith([player2, horz])
+        ...tilesWith(player2, vert),
+        ...tilesWith(player2, horz)
     ]
     if (dead.length) {
         getFirst(player2).remove()
-        setMap(map`
-u`)
+        setMap(map`u`)
     }
 
     if (finished && level+1 < levels.length) setMap(levels[++level]);
-})
-
+});

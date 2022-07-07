@@ -22,13 +22,13 @@ export const style = `
     image-rendering: pixelated;
   }
 
-  .sprites {
+  .tools {
     width: var(--editor-sidebar-width);
     background: var(--bg-floating);
     padding: 15px;
   }
 
-  .sprites button {
+  .tools button {
     --cols: 5;
     width: calc((var(--editor-sidebar-width) - 30px - var(--cols) * 10px) / var(--cols));
     display: inline-block;
@@ -41,7 +41,7 @@ export const style = `
     border-radius: 4px;
   }
 
-  .sprites button.active {
+  .tools button.active {
     box-shadow: inset 0 0 0 6px #fcc419;
   }
 `
