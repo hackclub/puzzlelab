@@ -13,10 +13,9 @@ export function sizeGameCanvas() {
   //   canvas.style.removeProperty("width");
   // }
 
-  const idealWidth = canvas.width;
-  const idealHeight = canvas.height;
+  const [idealWidth, idealHeight] = window.idealDimensions || [1, 1];
   let scale = Math.min(width/idealWidth, height/idealHeight);
-  // scale = nearestPowerOf2(scale);
+  scale = nearestPowerOf2(scale);
   const w = Math.floor(idealWidth * scale);
   const h = Math.floor(idealHeight * scale);
 
