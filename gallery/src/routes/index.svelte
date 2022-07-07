@@ -26,6 +26,7 @@
 		fetch('https://api.github.com/repos/bellesea/puzzlelab/contents/games/img')
 			.then((res) => res.json())
 			.then((data) => {
+				console.log(data);
 				imgData.set(data);
 			});
 
@@ -63,22 +64,23 @@
 		<div class="gallery-inner">
 			{#each $Data as data}
 				{#if data.name == '.DS_Store'}
-					<h1 style="display: none;">hi</h1> <!--hacky temp solution-->
+					<h1 style="display: none;">hi</h1>
+					<!--hacky temp solution-->
 				{:else if data.name == 'img'}
-					<h1 style="display: none;">hi</h1> <!--hacky temp solution-->
+					<h1 style="display: none;">hi</h1>
+					<!--hacky temp solution-->
 				{:else}
 					<div class="gallery-item">
 						<a href={`https://puzzlelab.hackclub.dev/?file=${data.html_url}`}>
 							{#each $Img as img}
-							{#if img.name == data.name}
-							<div class="image-box">
-								<img
-									src={img.download_url}
-									class="image"
-									alt="game preview"
-								/>
-							</div>
-							{/if}
+								{#if img.name
+									.replace('.png', '')
+									.replace('.jpg', '')
+									.replace('.jpeg', '') == data.name.replace('.js', '')}
+									<div class="image-box">
+										<img src={img.download_url} class="image" alt="game preview" />
+									</div>
+								{/if}
 							{/each}
 							<div class="text">
 								<h3>
