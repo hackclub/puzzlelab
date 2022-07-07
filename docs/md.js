@@ -6,17 +6,21 @@ export const md = `
 There are less than 15 functions you need to learn to know everything the engine can do.
 
 \`\`\`js
+
+const player = "p";
+const wall = "w";
+
 setLegend(
-    ["player", bitmap\`...\`],
-    ["wall", bitmap\`...\`],
+    [player, bitmap\`...\`],
+    [wall, bitmap\`...\`],
     ...
 );
 
-setBackground("wall");
+setBackground(wall);
 
-setSolids(["player", "wall"]);
+setSolids([ player, wall ]);
 setPushables({
-    "player": ["wall"]
+    [player]: [ wall ]
 });
 
 setMap(map\`...\`);
@@ -24,13 +28,13 @@ setMap(map\`...\`);
 onInput("right", () => { });
 afterInput(() => { });
 
-getAll("blocks");
-getFirst("player");
+getAll(wall);
+getFirst(player);
 
 getTile(0, 0);
-tilesWith("player", "wall", ...);
+tilesWith(player, wall, ...);
 clearTile(0, 0);
-addSprite(0, 0, "wall");
+addSprite(0, 0, wall);
 
 const playback = playTune(tune\`...\`, Infinity);
 playback.end();
@@ -48,10 +52,13 @@ When developing your game you can also use this key to create and find sprites.
 
 ### setLegend(bitmaps)
 
-Tell Game Lab what types of sprites are available in your game:
+Tell Game Lab what types of sprites are available in your game. 
+Bitmap keys must be a single character. 
+We recommend storing character keys in variables.
 
 \`\`\`js
-setLegend([ "nameOfType", bitmap\`...\` ])
+const player = "p";
+setLegend([ player, bitmap\`...\` ]);
 \`\`\`
 
 To create a new bitmap, type \`bitmap\` and then two backticks (\`\` \` \`\`). 
@@ -59,8 +66,8 @@ Click on the highlighted "bitmap" button to edit your drawing:
 
 \`\`\`js
 setLegend( 
-    [ "spriteType0", bitmap\`...\`],
-    [ "spriteType1", bitmap\`...\`]
+    [ "p", bitmap\`...\`],
+    [ "w", bitmap\`...\`]
 )
 \`\`\`
 
@@ -72,7 +79,7 @@ Sprite types that come first are drawn on top.
 Tiles a bitmap as the background of the game:
 
 \`\`\`js
-setBackground("spriteType")
+setBackground(spriteKey)
 \`\`\`
 
 This won't create a sprite— in other words, it only changes the visuals and won't affect in-game interactions like collisions.
@@ -114,7 +121,7 @@ Solid sprites can't overlap with each other.
 This is useful for creating things like walls:
 
 \`\`\`js
-setSolids(["player", "wall"])
+setSolids(["p", "w"]);
 \`\`\`
 
 ### setPushables(pushMap)
@@ -122,7 +129,7 @@ setSolids(["player", "wall"])
 Want sprites to be able to push each other around? Use \`setPushables\` to map a bitmap key to a list of bitmaps that it can push around:
 
 \`\`\`js
-setPushables({ "player": ["blocks", "pots"] })
+setPushables({ "p": ["b", "p"] })
 \`\`\`
 
 > **Watch out!** Make sure everything you pass to \`setPushables\` is also marked as a solid or they won't be pushed around.
@@ -144,7 +151,7 @@ Do something when the player presses a control:
 \`\`\`js
 onInput("right", () => {
     // Move the player one tile to the right
-    getFirst("player").x += 1
+    getFirst("p").x += 1
 })
 \`\`\`
 
@@ -183,7 +190,7 @@ The \`bitmapKey\` can also be changed to update the rendered graphic and collisi
 
 \`\`\`js
 sprite.y += 1
-sprite.type = "player"
+sprite.type = "p"
 \`\`\`
 
 \`dx\` and \`dy\` are cleared after \`afterInput\`. 
@@ -198,13 +205,13 @@ Returns a list of the sprites in the specified tile.
 Returns a list of the tiles with all types contained in them.
 
 \`\`\`js
-tilesWith("block")
+tilesWith("b")
 \`\`\`
 
 \`tilesWith\` accepts multiple sprite types.
 
 \`\`\`js
-tilesWith("block", "player", ...)
+tilesWith("b", "p", ...)
 \`\`\`
 
 ### addSprite(x, y, spriteType)
