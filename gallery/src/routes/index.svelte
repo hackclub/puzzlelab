@@ -8,7 +8,7 @@
 			scale: 1.05
 		});
 	})
-	import { apiData, Data, imgData, Img } from '../data';
+	import { apiData, Data } from '../data';
 
 	onMount(async () => {
 		fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/games?recursive=1')
@@ -22,11 +22,11 @@
 				return [];
 			});
 
-		fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/dist/assets')
-			.then((res) => res.json())
-			.then((data) => {
-				imgData.set(data);
-			});
+		// fetch('https://api.github.com/repos/hackclub/puzzlelab/contents/dist/assets')
+		// 	.then((res) => res.json())
+		// 	.then((data) => {
+		// 		imgData.set(data);
+		// 	});
 
 		var iframe = document.getElementsByTagName('iframe');
 		for (let i = 0; i < iframe.length; i++) {
