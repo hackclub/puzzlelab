@@ -2,6 +2,7 @@ import { bitmapTextToImageData } from "./bitmap.js";
 import { dispatch } from "../dispatch.js";
 import { textToTune } from '../textTuneConverters.js';
 import { global_state } from "../global_state.js";
+import * as render from "./render.js";
 
 
 let cur = null;
@@ -12,20 +13,13 @@ export function init(canvas) {
   canvas.parentNode.replaceChild(newCanvas, canvas);
   canvas = newCanvas;
 
-  const ctx = canvas.getContext("2d");
-
-  ctx.webkitImageSmoothingEnabled = false;
-  ctx.mozImageSmoothingEnabled = false;
-  ctx.imageSmoothingEnabled = false;
+  render.init(canvas);
 
   canvas.setAttribute("tabindex", "1");
 
 
   function gameloop() {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawTiles();
+    render.render(drawTiles());
 
     animationId = window.requestAnimationFrame(gameloop);
   }
@@ -43,10 +37,7 @@ export function init(canvas) {
   function setScreenSize(w, h) {
     canvas.width = w;
     canvas.height = h;
-
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
+    render.resize(canvas);
   }
 
   // tile gamelab
@@ -347,31 +338,23 @@ export function init(canvas) {
 
   function drawTiles() {
     const grid = getGrid();
-    const { width, maxTileDim } = dimensions;
-    ctx.save();
-    ctx.scale(2, 2);
+    const { width, height, maxTileDim } = dimensions;
+    const img = new ImageData(dimensions.width, dimensions.height);
 
     for (let i = 0; i < grid.length; i++) {
       const x = i%width; 
       const y = Math.floor(i/width); 
       const sprites = grid[i];
 
-      if (background !== "") {
-        const c = _getTileImage(background);
-        ctx.drawImage(c, x*16, y*16);
-      }
-
-      const zOrder = legend.map(x => x[0]);
-
-      sprites
-        .sort((a, b) => zOrder.indexOf(b.type) - zOrder.indexOf(a.type))
-        .forEach( ({ type }) => {
-          const c = _getTileImage(type);
-          ctx.drawImage(c, x*16, y*16);
-        })
+      if (!sprites[0]) continue;
+      const r = sprites[0].type.charCodeAt(0);
+      img.data[(y*dimensions.width + x)*4 + 0] = r;
+      img.data[(y*dimensions.width + x)*4 + 1] = (r*3) % 128;
+      img.data[(y*dimensions.width + x)*4 + 2] = 255 - r;
+      img.data[(y*dimensions.width + x)*4 + 3] = 255;
     }
-    ctx.restore();
-   
+
+    return img;
   }
 
   function afterInput(fn) {
