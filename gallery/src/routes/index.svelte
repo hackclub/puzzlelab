@@ -71,7 +71,7 @@
 					<!--hacky temp solution-->
 				{:else}
 					<div class="gallery-item">
-						<a href={`https://puzzlelab.hackclub.dev/?file=${data.html_url}`}>
+						<a href={`https://puzzlelab.hackclub.dev/?file=https://hackclub.github.io/puzzlelab/games/${data.name}`}>
 							{#each $Img as img}
 								{#if img.name
 									.replace('.png', '')
