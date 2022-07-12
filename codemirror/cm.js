@@ -27,7 +27,7 @@ export function createEditorView(onUpdate = () => {}) {
       extensions: [
         basicSetup,
         keymap.of([indentWithTab]), // TODO: We should put a note about Esc+Tab for accessibility somewhere.
-        indentUnit.of("    "),
+        indentUnit.of("  "),
         javascript(),
         // booleanCheckbox,
         editors,
