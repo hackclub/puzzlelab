@@ -19,12 +19,10 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     dimensions: {
       width: 0,
       height: 0,
-      maxTileDim: 0,
     },
     sprites: [],
     solids: [],
     pushable: {},
-    maxTileDim: 0,
   };
 
   class Sprite {
@@ -95,6 +93,8 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     }
 
     let canMove = true;
+
+    const { pushable }  = state;
 
     grid[i].forEach(sprite => {
       const isSolid = state.solids.includes(sprite.type);
