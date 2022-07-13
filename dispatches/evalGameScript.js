@@ -1,5 +1,5 @@
 // import { init } from "../engine/gamelab_functions.js";
-import { init } from "../engine/engine.js";
+import { init } from "../engine/platform.js";
 import { playTune } from "../engine/playTune.js";
 
 let tunes = [];
