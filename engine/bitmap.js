@@ -13,7 +13,7 @@ export function bitmapTextToImageData(string, palette) {
   for (let i = 0; i < width*height; i++) {
     const type = string.split("").filter(x => x.match(/\S/))[i];
 
-    // if (!(type in colors)) console.error("unknown color:", type);
+    if (!(type in colors)) console.error("unknown color:", type);
 
     const [ r, g, b, a ] = colors[type] ?? colors["."];
     data[i*4] = r;
