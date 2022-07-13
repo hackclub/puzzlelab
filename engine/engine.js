@@ -75,8 +75,9 @@ export function init({ palette, setBitmaps, setScreenSize }) {
   }
 
   const _canMoveToPush = (sprite, dx, dy) => {
+		const { solids, dimensions, pushable } = state;
     const { x, y, type } = sprite;
-    const { width, height } = state.dimensions;
+    const { width, height } = dimensions;
     const i = (x+dx)+(y+dy)*width;
 
     const inBounds = (x+dx < width && x+dx >= 0 && y+dy < height && y+dy >= 0);
@@ -84,7 +85,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
 
     const grid = getGrid();
 
-    const notSolid = !state.solids.includes(type);
+    const notSolid = !solids.includes(type);
     const noMovement = dx === 0 && dy === 0;
     const movingToEmpty = i < grid.length && grid[i].length === 0;
 
@@ -97,7 +98,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     let canMove = true;
 
     grid[i].forEach(sprite => {
-      const isSolid = state.solids.includes(sprite.type);
+      const isSolid = solids.includes(sprite.type);
       const isPushable = (type in pushable) && pushable[type].includes(sprite.type);
 
       if (isSolid && !isPushable)
@@ -202,7 +203,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     const grid = getGrid();
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
-        const tile = state.grid[width*y+x] || [];
+        const tile = grid[width*y+x] || [];
         const matchIndices = matchingTypes.map(type => {
           return tile.map(s => s.type).indexOf(type);
         })
