@@ -1,4 +1,4 @@
-import palette from "./palette.js"
+import { palette } from "./palette.js"
 
 const githubPages = str => `https://hackclub.github.io/puzzlelab/games/${str}.js`;
 const makeSampleLink = str => 
