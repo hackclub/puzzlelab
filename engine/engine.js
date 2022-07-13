@@ -1,31 +1,77 @@
 import { bitmapTextToImageData } from "./bitmap.js";
+import { dispatch } from "../dispatch.js";
+import { textToTune } from '../textTuneConverters.js';
+import { global_state } from "../global_state.js";
+import { sizeGameCanvas } from "../dispatches/sizeGameCanvas.js";
+import * as render from "./render.js";
 
-// Tagged tempalate literal factory go brrr
-export function _makeTag(cb) {
-  return (strings, ...interps) => {
-    if (typeof strings === "string") {
-      throw new Error("Tagged template literal must be used like name`text`, instead of name(`text`)");
-    }
-    const string = strings.reduce((p, c, i) => p + c + (interps[i] ?? ''), '');
-    return cb(string);
+
+let cur = null;
+
+export function init(canvas) {
+  // remove event listeners
+  let newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  canvas = newCanvas;
+
+  render.init(canvas);
+
+  canvas.setAttribute("tabindex", "1");
+
+
+  function gameloop() {
+    render.render(drawTiles());
+
+    animationId = window.requestAnimationFrame(gameloop);
   }
-}
 
-export function init({ palette, setBitmaps, setScreenSize }) {
+  function end() {
+    window.cancelAnimationFrame(animationId);
+  }
+
+  if (cur) cur();
+  cur = end;
+
+
+   let animationId = window.requestAnimationFrame(gameloop);
+
+  function setScreenSize(w, h) {
+    canvas.width = w;
+    canvas.height = h;
+
+    window.idealDimensions = [dimensions.width, dimensions.height];
+    sizeGameCanvas();
+
+    render.resize(canvas);
+  }
+
   // tile gamelab
-
-  const state = {
-    legend: [],
-    dimensions: {
-      width: 0,
-      height: 0,
-      maxTileDim: 0,
-    },
-    sprites: [],
-    solids: [],
-    pushable: {},
+  let legend = [];
+  let dimensions = {
+    width: 0,
+    height: 0,
     maxTileDim: 0,
+  }
+  let sprites = [];
+  let tileInputs = {
+    up: [],
+    down: [],
+    left: [],
+    right: [],
+    i: [],
+    j: [],
+    k: [],
+    l: [],
   };
+  let afterInputs = [];
+  let solids = [];
+  let pushable = {};
+  let maxTileDim = 0;
+
+  let background = "";
+  const tempCanvas = document.createElement("canvas");
+  // tempCanvas.width = 16;
+  // tempCanvas.height = 16;
 
   class Sprite {
     constructor(type, x, y) {
@@ -37,7 +83,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     }
 
     set type(k) {
-      const legendDict = Object.fromEntries(state.legend);
+      const legendDict = Object.fromEntries(legend);
       if (!(k in legendDict)) throw new Error(`"${k}" not in legend.`);
 
       this.remove();
@@ -69,14 +115,15 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     }
 
     remove() {
-      state.sprites = state.sprites.filter(s => s !== this);
+      sprites = sprites.filter(s => s !== this);
       return this;
     }
   }
 
+
   const _canMoveToPush = (sprite, dx, dy) => {
     const { x, y, type } = sprite;
-    const { width, height } = state.dimensions;
+    const { width, height } = dimensions;
     const i = (x+dx)+(y+dy)*width;
 
     const inBounds = (x+dx < width && x+dx >= 0 && y+dy < height && y+dy >= 0);
@@ -84,7 +131,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
 
     const grid = getGrid();
 
-    const notSolid = !state.solids.includes(type);
+    const notSolid = !solids.includes(type);
     const noMovement = dx === 0 && dy === 0;
     const movingToEmpty = i < grid.length && grid[i].length === 0;
 
@@ -97,7 +144,7 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     let canMove = true;
 
     grid[i].forEach(sprite => {
-      const isSolid = state.solids.includes(sprite.type);
+      const isSolid = solids.includes(sprite.type);
       const isPushable = (type in pushable) && pushable[type].includes(sprite.type);
 
       if (isSolid && !isPushable)
@@ -116,11 +163,37 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     return canMove;
   }
 
+  canvas.addEventListener("keydown", (e) => {
+    const key = e.key;
+
+    const VALID_INPUTS = ["w", "a", "s", "d", "i", "j", "k", "l"];
+
+    if (!VALID_INPUTS.includes(key)) return;
+
+    if (key === "w") tileInputs["up"].forEach(fn => fn());
+    if (key === "a") tileInputs["left"].forEach(fn => fn());
+    if (key === "s") tileInputs["down"].forEach(fn => fn());
+    if (key === "d") tileInputs["right"].forEach(fn => fn());
+    if (key === "i") tileInputs["i"].forEach(fn => fn());
+    if (key === "j") tileInputs["j"].forEach(fn => fn());
+    if (key === "k") tileInputs["k"].forEach(fn => fn());
+    if (key === "l") tileInputs["l"].forEach(fn => fn());
+
+    afterInputs.forEach(f => f());
+
+    sprites.forEach(s => {
+      s.dx = 0;
+      s.dy = 0;
+    })
+
+    e.preventDefault();
+  });
+
   const getGrid = () => {
-    const { width, height } = state.dimensions;
+    const { width, height } = dimensions;
 
     const grid = new Array(width*height).fill(0).map(x => []);
-    state.sprites.forEach(s => {
+    sprites.forEach(s => {
       const i = s.x+s.y*width;
       grid[i].push(s);
     })
@@ -129,14 +202,13 @@ export function init({ palette, setBitmaps, setScreenSize }) {
   }
 
   const _checkBounds = (x, y) => {
-    const { width, height } = state.dimensions;
+    const { width, height } = dimensions;
 
     if (x > width || x < 0 || y < 0 || y > height) throw new Error(`Sprite out of bounds.`);
   }
 
   const _checkLegend = type => {
-    if (!(type in Object.fromEntries(state.legend)))
-      throw new Error(`Unknown sprite type: ${type}`);
+    if (!(type in Object.fromEntries(legend))) throw new Error(`Unknown sprite type: ${type}`);
   }
 
   const addSprite = (x, y, type) => {
@@ -146,14 +218,55 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     _checkLegend(type);
 
     const s = new Sprite(type, x, y);
-    state.sprites.push(s);
+    sprites.push(s);
   }
 
+  let cachedTileImages = {};
+
   function setLegend(...bitmaps) {
-    state.legend = bitmaps;
-    setBitmaps(bitmaps);
+    legend = bitmaps;
+
+    // check that legend keys are single characters
+
+    cachedTileImages = {};
+    render.setBitmaps(bitmaps);
+    dispatch("SET_BITMAPS", { bitmaps });
   }
+
   
+  function _getTileImage(type) {
+    const legendDict = Object.fromEntries(legend);
+    if (!(type in legendDict)) throw new Error(`Type not in legend: ${type}`);
+
+    const val = legendDict[type];
+    const isCombo = val.type !== undefined;
+
+    if (isCombo) throw new Error(`Can not draw combination sprites.`);
+
+    if (!(type in cachedTileImages)) {
+      const c = document.createElement("canvas");
+      c.width = val.imageData.width;
+      c.height = val.imageData.height;
+
+      const ctx = c.getContext("2d");
+
+      ctx.webkitImageSmoothingEnabled = false;
+      ctx.mozImageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = false;
+
+      ctx.putImageData(
+        val.imageData, 
+        0,
+        0,
+      );
+
+      cachedTileImages[type] = c;
+    }
+
+    
+    return cachedTileImages[type];
+  }
+
   const _allEqual = arr => arr.every(val => val === arr[0]);
 
   function setMap(string) { 
@@ -163,10 +276,10 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     if (!isRect) throw new Error("Level must be rect.");
     const w = rows[0].length;
     const h = rows.length;
-    state.dimensions.width = w;
-    state.dimensions.height = h;
+    dimensions.width = w;
+    dimensions.height = h;
 
-    state.sprites = [];
+    sprites = [];
 
     setScreenSize(w*16, h*16);
 
@@ -185,11 +298,11 @@ export function init({ palette, setBitmaps, setScreenSize }) {
   }
 
   function clearTile(x, y) {
-    state.sprites = state.sprites.filter(s => s.x !== x || s.y !== y);
+    sprites = sprites.filter(s => s.x !== x || s.y !== y);
   }
 
   function getTile(x, y) { 
-    return getGrid()[state.dimensions.width*y+x] || [];
+    return getGrid()[dimensions.width*y+x] || [];
   }
 
   function hasDuplicates(array) {
@@ -197,12 +310,11 @@ export function init({ palette, setBitmaps, setScreenSize }) {
   }
 
   function tilesWith(...matchingTypes) {
-    const { width, height } = state.dimensions;
     const tiles = [];
     const grid = getGrid();
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        const tile = state.grid[width*y+x] || [];
+    for (let x = 0; x < dimensions.width; x++) {
+      for (let y = 0; y < dimensions.height; y++) {
+        const tile = grid[dimensions.width*y+x] || [];
         const matchIndices = matchingTypes.map(type => {
           return tile.map(s => s.type).indexOf(type);
         })
@@ -216,14 +328,61 @@ export function init({ palette, setBitmaps, setScreenSize }) {
   }
 
   function setSolids(arr) {
-    state.solids = arr;
+    solids = arr;
   }
 
   function setPushables(map) {
-    state.pushable = map;
+    pushable = map;
   }
 
-  const api = {
+  function onInput(type, fn) {
+    if (!(type in tileInputs)) console.error("Unknown input type:", type)
+    tileInputs[type].push(fn);
+  }
+
+  function drawTiles() {
+    const grid = getGrid();
+    const { width, height, maxTileDim } = dimensions;
+    if (width == 0 || height == 0) return new ImageData(1, 1);
+    const img = new ImageData(width, height);
+
+    for (let i = 0; i < grid.length; i++) {
+      const x = i%width; 
+      const y = Math.floor(i/width); 
+
+      const sprites = grid[i];
+      const zOrder = legend.map(x => x[0]);
+      sprites.sort((a, b) => zOrder.indexOf(a.type) - zOrder.indexOf(b.type));
+
+      for (let i = 0; i < 4; i++) {
+        if (!sprites[i]) continue;
+        const { type: t } = sprites[i];
+        img.data[(y*dimensions.width + x)*4 + i] = 1+legend.findIndex(f => f[0] == t);
+      }
+    }
+
+    return img;
+  }
+
+  function afterInput(fn) {
+    afterInputs.push(fn);
+  }
+
+  // how to add timed things, like bird flying and ball kicks
+  
+  // Tagged tempalate literal factory go brrr
+  function _makeTag(cb) {
+    return (strings, ...interps) => {
+      if (typeof strings === "string") {
+        throw new Error("Tagged template literal must be used like name`text`, instead of name(`text`)");
+      }
+      const string = strings.reduce((p, c, i) => p + c + (interps[i] ?? ''), '');
+      return cb(string);
+    }
+  }
+
+  return {
+    setScreenSize,
     setLegend, 
     setMap, 
     addSprite,
@@ -231,22 +390,20 @@ export function init({ palette, setBitmaps, setScreenSize }) {
     getTile,
     tilesWith,
     clearTile, 
+    onInput, 
     setSolids, 
     setPushables, 
+    afterInput, 
     map: _makeTag(text => text), // No-op for now, here for editor support
-    bitmap: _makeTag(text => ({
-      text,
-      imageData: bitmapTextToImageData(text, palette)
-    })),
-    getFirst: (type) => state.sprites.find(t => t.type === type), // **
-    getAll: (type) => type ? state.sprites.filter(t => t.type === type) : state.sprites, // **
-    width: () => state.dimensions.width,
-    height: () => state.dimensions.height,
+    tune: _makeTag(text => textToTune(text)),
+    bitmap: _makeTag(text => ({text, imageData: bitmapTextToImageData(text, global_state.palette)})),
+    getFirst: (type) => sprites.find(t => t.type === type), // **
+    getAll: (type) => type ? sprites.filter(t => t.type === type) : sprites, // **
+    width: () => dimensions.width,
+    height: () => dimensions.height,
     setBackground: (type) => { 
       _checkLegend(type);
       background = type;
     }
-  };
-
-  return { api, state };
+  }
 }

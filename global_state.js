@@ -1,4 +1,3 @@
-import { palette } from "./palette.js"
 
 const githubPages = str => `https://hackclub.github.io/puzzlelab/games/${str}.js`;
 const makeSampleLink = str => 
@@ -25,5 +24,16 @@ export const global_state = {
   ],
   bitmaps: [],
   savedGames: [],
-  palette,
+  palette: [
+    ["0", [0, 0, 0, 255]],
+    ["1", [255/2, 255/2, 255/2, 255]],
+    ["2", [255, 255, 255, 255]],
+    ["3", [255, 0, 0, 255]],
+    ["4", [0, 255, 0, 255]],
+    ["5", [0, 0, 255, 255]],
+    ["6", [255, 255, 0, 255]],
+    ["7", [0, 255, 255, 255]],
+    ["8", [255, 0, 255, 255]],
+    [".", [0, 0, 0, 0]]
+  ],
 }
