@@ -1,3 +1,5 @@
+> This project is deprecated. The up to date version is [sprig](https://www.github.com/hackclub/sprig).
+
 # Hack Club Puzzle Lab
 
 The best way to learn is by making things you care about and sharing them with others.  
